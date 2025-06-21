@@ -184,8 +184,8 @@
 
       try {
         const [statusRes, historyRes] = await Promise.all([
-          fetch('status.json'),
-          fetch('history.json')
+          fetch('https://api-monitor-data-bu.s3.us-east-1.amazonaws.com/frontend/status.json'),
+          fetch('https://api-monitor-data-bu.s3.us-east-1.amazonaws.com/frontend/history.json')
         ]);
         
         if (!statusRes.ok) throw new Error('Not found');
