@@ -37,8 +37,8 @@ pipeline {
           credentialsId: "${env.AWS_CREDENTIALS_ID}"
         ]]) {
           bat '''
-            aws s3 cp frontend\\status.json s3://%S3_BUCKET%/status.json --region %AWS_REGION%
-            aws s3 cp frontend\\history.json s3://%S3_BUCKET%/history.json --region %AWS_REGION%
+            aws s3 cp frontend\\status.json s3://%S3_BUCKET%/frontend/status.json --region %AWS_REGION%
+            aws s3 cp frontend\\history.json s3://%S3_BUCKET%/frontend/history.json --region %AWS_REGION%
           '''
         }
       }
