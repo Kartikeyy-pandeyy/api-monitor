@@ -5,68 +5,98 @@
     "critical": true
   },
   {
-    "name": "Example Health",
+    "name": "Google Homepage",
+    "url": "https://www.google.com",
+    "critical": true
+  },
+  {
+    "name": "Cloudflare Trace",
+    "url": "https://1.1.1.1/cdn-cgi/trace",
+    "critical": false
+  },
+  {
+    "name": "Wikipedia Summary (India)",
+    "url": "https://en.wikipedia.org/api/rest_v1/page/summary/India",
+    "critical": false
+  },
+  {
+    "name": "DuckDuckGo Instant Answer",
+    "url": "https://api.duckduckgo.com/?q=ChatGPT&format=json",
+    "critical": false
+  },
+  {
+    "name": "Open-Meteo Weather",
+    "url": "https://api.open-meteo.com/v1/forecast?latitude=35&longitude=139&hourly=temperature_2m",
+    "critical": false
+  },
+  {
+    "name": "IPInfo.io",
+    "url": "https://ipinfo.io/json",
+    "critical": false
+  },
+  {
+    "name": "HTTP 200 OK",
     "url": "https://httpstat.us/200",
     "critical": false
   },
   {
-    "name": "Simulated Failure",
+    "name": "HTTP 404 Not Found",
+    "url": "https://httpstat.us/404",
+    "critical": false
+  },
+  {
+    "name": "HTTP 503 Service Unavailable",
     "url": "https://httpstat.us/503",
     "critical": true
   },
   {
-    "name": "OpenWeatherMap",
-    "url": "https://api.openweathermap.org/data/2.5/weather?q=London&appid=439d4b804bc8187953eb36d2a8c26a02",
+    "name": "HTTP 500 Internal Server Error",
+    "url": "https://httpstat.us/500",
     "critical": false
   },
   {
-    "name": "CoinGecko Crypto API",
-    "url": "https://api.coingecko.com/api/v3/ping",
+    "name": "Fastly Homepage",
+    "url": "https://www.fastly.com",
     "critical": false
   },
   {
-    "name": "Cat Facts",
-    "url": "https://catfact.ninja/fact",
+    "name": "Baidu",
+    "url": "https://www.baidu.com",
     "critical": false
   },
   {
-    "name": "IPify - Public IP",
-    "url": "https://api.ipify.org?format=json",
+    "name": "Spotify API (Unauthorized)",
+    "url": "https://api.spotify.com/v1/browse/new-releases",
     "critical": false
   },
   {
-    "name": "Chuck Norris Jokes",
-    "url": "https://api.chucknorris.io/jokes/random",
+    "name": "Reddit (Old)",
+    "url": "https://www.reddit.com/r/technology/.json",
     "critical": false
   },
   {
-    "name": "Random Dog",
-    "url": "https://dog.ceo/api/breeds/image/random",
+    "name": "Open Library",
+    "url": "https://openlibrary.org/works/OL45883W.json",
     "critical": false
   },
   {
-    "name": "Bored API",
-    "url": "https://www.boredapi.com/api/activity",
+    "name": "Public APIs Directory",
+    "url": "https://api.publicapis.org/entries",
     "critical": false
   },
   {
-    "name": "Advice Slip",
-    "url": "https://api.adviceslip.com/advice",
+    "name": "Exchange Rate API",
+    "url": "https://api.exchangerate.host/latest",
     "critical": false
   },
   {
-    "name": "Joke API",
-    "url": "https://v2.jokeapi.dev/joke/Any",
+    "name": "Dummy JSON API",
+    "url": "https://dummyjson.com/products/1",
     "critical": false
   },
   {
-    "name": "REST Countries",
-    "url": "https://restcountries.com/v3.1/name/india",
-    "critical": false
-  },
-  {
-    "name": "JSONPlaceholder",
-    "url": "https://jsonplaceholder.typicode.com/posts/1",
+    "name": "Nobel Prize API",
+    "url": "https://api.nobelprize.org/v1/prize.json?year=2023",
     "critical": false
   }
 ]
