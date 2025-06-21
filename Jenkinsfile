@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   triggers {
-    cron('H/10 * * * *')  // Run every 10 minutes
+    cron('H/30 * * * *')
   }
 
   stages {
@@ -14,13 +14,13 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        sh 'docker build -t api-checker .'
+        bat 'docker build -t api-checker .'
       }
     }
 
     stage('Run API Checker') {
       steps {
-        sh 'docker run --rm -v $WORKSPACE/frontend:/app/frontend api-checker'
+        bat 'docker run --rm -v %WORKSPACE%\\frontend:/app/frontend api-checker'
       }
     }
 
