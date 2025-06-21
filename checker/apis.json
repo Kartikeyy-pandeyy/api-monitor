@@ -1,0 +1,17 @@
+[
+  {
+    "name": "GitHub API",
+    "url": "https://api.github.com",
+    "critical": true
+  },
+  {
+    "name": "Example Health",
+    "url": "https://httpstat.us/200",
+    "critical": false
+  },
+  {
+    "name": "Simulated Failure",
+    "url": "https://httpstat.us/503",
+    "critical": true
+  }
+]
