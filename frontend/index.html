@@ -784,8 +784,16 @@
         const upCount = this.apis.filter(api => api.status === 'UP').length;
         const downCount = this.apis.filter(api => api.status === 'DOWN').length;
         const criticalCount = this.apis.filter(api => api.critical).length;
-        const totalLatency = this.apis.reduce((sum, api) => sum + (api.latency || 0), 0);
-        const avgLatency = this.apis.length ? Math.round(totalLatency / this.apis.length) : 0;
+
+        // Calculate average latency only from valid positive values
+        const validLatencies = this.apis
+          .map(api => api.latency && api.latency > 0 ? Math.max(0, api.latency) : 0)
+          .filter(latency => latency > 0);
+
+        const avgLatency = validLatencies.length
+          ? Math.round(validLatencies.reduce((sum, latency) => sum + latency, 0) / validLatencies.length)
+          : 0;
+
         const uptime = this.apis.length ? Math.round((upCount / this.apis.length) * 100) : 0;
 
         document.getElementById('total-up').textContent = upCount;
@@ -833,9 +841,13 @@
             case 'name':
               return a.name.localeCompare(b.name);
             case 'latency-high':
-              return (b.latency || 0) - (a.latency || 0);
+              const aLatencyHigh = Math.max(0, a.latency || 0);
+              const bLatencyHigh = Math.max(0, b.latency || 0);
+              return bLatencyHigh - aLatencyHigh;
             case 'latency-low':
-              return (a.latency || 0) - (b.latency || 0);
+              const aLatencyLow = Math.max(0, a.latency || 0);
+              const bLatencyLow = Math.max(0, b.latency || 0);
+              return aLatencyLow - bLatencyLow;
             default:
               return 0;
           }
@@ -850,9 +862,12 @@
       }
 
       getLatencyCategory(latency) {
-        if (!latency) return { category: 'Unknown', class: 'status-warning', color: '#6b7280' };
-        if (latency <= 300) return { category: 'Excellent', class: 'status-up', color: '#10b981' };
-        if (latency <= 1000) return { category: 'Good', class: 'status-warning', color: '#f59e0b' };
+        // Ensure latency is positive and valid
+        const validLatency = latency && latency > 0 ? Math.max(0, latency) : null;
+
+        if (!validLatency) return { category: 'Unknown', class: 'status-warning', color: '#6b7280' };
+        if (validLatency <= 300) return { category: 'Excellent', class: 'status-up', color: '#10b981' };
+        if (validLatency <= 1000) return { category: 'Good', class: 'status-warning', color: '#f59e0b' };
         return { category: 'Slow', class: 'status-down', color: '#ef4444' };
       }
 
@@ -909,13 +924,14 @@
         // Details
         card.querySelector('.status-text').textContent = api.status;
         card.querySelector('.code-text').textContent = api.code || '--';
-        card.querySelector('.latency-text').textContent = api.latency ? `${api.latency}ms` : '--';
+        const displayLatency = api.latency && api.latency > 0 ? Math.max(0, api.latency) : null;
+        card.querySelector('.latency-text').textContent = displayLatency ? `${displayLatency}ms` : '--';
         card.querySelector('.time-text').textContent = new Date(api.timestamp).toLocaleTimeString();
 
         // Latency bar
         const latencyProgress = card.querySelector('.latency-progress');
-        if (api.latency) {
-          const percentage = Math.min(100, (api.latency / 2000) * 100);
+        if (displayLatency) {
+          const percentage = Math.min(100, (displayLatency / 2000) * 100);
           latencyProgress.style.width = `${percentage}%`;
           latencyProgress.style.background = `linear-gradient(90deg, ${latencyInfo.color}, ${latencyInfo.color}dd)`;
         }

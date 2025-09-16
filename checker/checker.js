@@ -26,17 +26,48 @@ async function checkAPI(api) {
   const name = api.name || url;
   const timeout = api.timeout || TIMEOUT_MS;
 
+  let lastLatency = 0;
+  let lastError = null;
+  let lastStatusCode = null;
+
   for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt++) {
     const start = Date.now();
     try {
       const res = await axios.get(url, { timeout });
       const latency = Date.now() - start;
-      return { name, url, status: 'UP', code: res.status, latency, attempt, timestamp: new Date().toISOString() };
+
+      // Ensure latency is positive and reasonable
+      const validLatency = Math.max(0, Math.round(latency));
+
+      return {
+        name,
+        url,
+        status: 'UP',
+        code: res.status,
+        latency: validLatency,
+        attempt,
+        timestamp: new Date().toISOString()
+      };
     } catch (err) {
+      const requestLatency = Date.now() - start;
+      lastLatency = Math.max(0, Math.round(requestLatency));
+      lastError = err.code || err.message;
+      lastStatusCode = err.response?.status || 503;
+
       if (attempt === RETRY_ATTEMPTS) {
-        const latency = Date.now() - start;
-        return { name, url, status: 'DOWN', code: err.response?.status || 503, error: err.code || err.message, latency, attempt, timestamp: new Date().toISOString() };
+        return {
+          name,
+          url,
+          status: 'DOWN',
+          code: lastStatusCode,
+          error: lastError,
+          latency: lastLatency,
+          attempt,
+          timestamp: new Date().toISOString()
+        };
       }
+
+      // Wait before retry (this delay is NOT included in latency calculation)
       await new Promise(r => setTimeout(r, 200 * attempt));
     }
   }

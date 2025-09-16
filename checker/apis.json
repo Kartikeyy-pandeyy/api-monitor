@@ -10,169 +10,34 @@
     "critical": true
   },
   {
-    "name": "Cloudflare Trace",
+    "name": "Cloudflare DNS",
     "url": "https://1.1.1.1/cdn-cgi/trace",
     "critical": false
   },
   {
-    "name": "Wikipedia Summary (India)",
+    "name": "Wikipedia API",
     "url": "https://en.wikipedia.org/api/rest_v1/page/summary/India",
     "critical": false
   },
   {
-    "name": "DuckDuckGo Instant Answer",
-    "url": "https://api.duckduckgo.com/?q=ChatGPT&format=json",
+    "name": "JSONPlaceholder",
+    "url": "https://jsonplaceholder.typicode.com/posts/1",
     "critical": false
   },
   {
-    "name": "Open-Meteo Weather",
-    "url": "https://api.open-meteo.com/v1/forecast?latitude=35&longitude=139&hourly=temperature_2m",
+    "name": "HTTPBin Status",
+    "url": "https://httpbin.org/status/200",
     "critical": false
   },
   {
-    "name": "IPInfo.io",
-    "url": "https://ipinfo.io/json",
-    "critical": false
-  },
-  {
-    "name": "HTTP 200 OK",
-    "url": "https://httpstat.us/200",
-    "critical": false
-  },
-  {
-    "name": "HTTP 404 Not Found",
+    "name": "HTTP 404 Test",
     "url": "https://httpstat.us/404",
     "critical": false
   },
   {
-    "name": "HTTP 503 Service Unavailable",
-    "url": "https://httpstat.us/503",
-    "critical": true
-  },
-  {
-    "name": "HTTP 500 Internal Server Error",
+    "name": "HTTP 500 Test",
     "url": "https://httpstat.us/500",
     "critical": false
-  },
-  {
-    "name": "Fastly Homepage",
-    "url": "https://www.fastly.com",
-    "critical": false
-  },
-  {
-    "name": "Baidu",
-    "url": "https://www.baidu.com",
-    "critical": false
-  },
-  {
-    "name": "Spotify API (Unauthorized)",
-    "url": "https://api.spotify.com/v1/browse/new-releases",
-    "critical": false
-  },
-  {
-    "name": "Reddit (Old)",
-    "url": "https://www.reddit.com/r/technology/.json",
-    "critical": false
-  },
-  {
-    "name": "Open Library",
-    "url": "https://openlibrary.org/works/OL45883W.json",
-    "critical": false
-  },
-  {
-    "name": "Public APIs Directory",
-    "url": "https://api.publicapis.org/entries",
-    "critical": false
-  },
-  {
-    "name": "Exchange Rate API",
-    "url": "https://api.exchangerate.host/latest",
-    "critical": false
-  },
-  {
-    "name": "Dummy JSON API",
-    "url": "https://dummyjson.com/products/1",
-    "critical": false
-  },
-  {
-    "name": "Nobel Prize API",
-    "url": "https://api.nobelprize.org/v1/prize.json?year=2023",
-    "critical": false
-  },
-  {
-    "name": "Flipkart API",
-    "url": "https://www.flipkart.com/api/3/page/dynamic/search",
-    "critical": true
-  },
-  {
-    "name": "Amazon India",
-    "url": "https://www.amazon.in",
-    "critical": true
-  },
-  {
-    "name": "Myntra API",
-    "url": "https://www.myntra.com/gateway/v2/search",
-    "critical": false
-  },
-  {
-    "name": "Swiggy API",
-    "url": "https://www.swiggy.com/dapi/restaurants/list/v5",
-    "critical": true
-  },
-  {
-    "name": "Zomato API",
-    "url": "https://developers.zomato.com/api/v2.1/cuisines",
-    "critical": false
-  },
-  {
-    "name": "Paytm API",
-    "url": "https://paytm.com/api/v1/expresscheckout/verify",
-    "critical": true
-  },
-  {
-    "name": "PhonePe API",
-    "url": "https://www.phonepe.com/webapps/merchantonboarding",
-    "critical": true
-  },
-  {
-    "name": "UPI Payment Gateway",
-    "url": "https://api.upigateway.com/api/v1/status",
-    "critical": true
-  },
-  {
-    "name": "IRCTC API",
-    "url": "https://www.irctc.co.in/eticketing/protected/mapps01/altAvlEnq",
-    "critical": false
-  },
-  {
-    "name": "Ola API",
-    "url": "https://api.olacabs.com/v1/products",
-    "critical": false
-  },
-  {
-    "name": "Uber India API",
-    "url": "https://api.uber.com/v1/products",
-    "critical": false
-  },
-  {
-    "name": "GitHub API v4",
-    "url": "https://api.github.com/graphql",
-    "critical": true
-  },
-  {
-    "name": "GitLab API",
-    "url": "https://gitlab.com/api/v4/projects",
-    "critical": true
-  },
-  {
-    "name": "Bitbucket API",
-    "url": "https://api.bitbucket.org/2.0/repositories",
-    "critical": false
-  },
-  {
-    "name": "Docker Hub API",
-    "url": "https://hub.docker.com/v2/repositories",
-    "critical": true
   },
   {
     "name": "NPM Registry",
@@ -180,68 +45,33 @@
     "critical": true
   },
   {
-    "name": "PyPI API",
+    "name": "PyPI Package Info",
     "url": "https://pypi.org/pypi/django/json",
     "critical": false
   },
   {
+    "name": "Docker Hub Registry",
+    "url": "https://registry-1.docker.io/v2/",
+    "critical": true
+  },
+  {
     "name": "Maven Central",
-    "url": "https://search.maven.org/solrsearch/select",
+    "url": "https://repo1.maven.org/maven2/",
     "critical": false
   },
   {
-    "name": "Jenkins API",
-    "url": "https://ci.jenkins.io/api/json",
+    "name": "Ubuntu Package Repository",
+    "url": "https://archive.ubuntu.com/ubuntu/",
+    "critical": false
+  },
+  {
+    "name": "GitHub Status",
+    "url": "https://www.githubstatus.com/api/v2/status.json",
     "critical": true
   },
   {
-    "name": "AWS Status",
-    "url": "https://status.aws.amazon.com/data.json",
-    "critical": true
-  },
-  {
-    "name": "Google Cloud Status",
-    "url": "https://status.cloud.google.com/incidents.json",
-    "critical": true
-  },
-  {
-    "name": "Azure Status",
-    "url": "https://status.azure.com/api/v2/status.json",
-    "critical": true
-  },
-  {
-    "name": "DigitalOcean API",
-    "url": "https://api.digitalocean.com/v2/account",
-    "critical": false
-  },
-  {
-    "name": "Heroku API",
-    "url": "https://api.heroku.com/apps",
-    "critical": false
-  },
-  {
-    "name": "Vercel API",
-    "url": "https://api.vercel.com/v6/deployments",
-    "critical": false
-  },
-  {
-    "name": "Netlify API",
-    "url": "https://api.netlify.com/api/v1/sites",
-    "critical": false
-  },
-  {
-    "name": "Stack Overflow API",
-    "url": "https://api.stackexchange.com/2.3/questions",
-    "critical": false
-  },
-  {
-    "name": "LeetCode API",
-    "url": "https://leetcode.com/api/problems/all",
-    "critical": false
-  },
-  {
-    "name": "HackerRank API",
-    "url": "https://www.hackerrank.com/rest/contests/master/challenges",
+    "name": "Stack Overflow",
+    "url": "https://stackoverflow.com",
     "critical": false
   },
   {
@@ -250,188 +80,458 @@
     "critical": false
   },
   {
-    "name": "Coursera API",
-    "url": "https://api.coursera.org/api/courses.v1",
+    "name": "MDN Web Docs",
+    "url": "https://developer.mozilla.org",
     "critical": false
   },
   {
-    "name": "Udemy API",
-    "url": "https://www.udemy.com/api-2.0/courses",
+    "name": "W3Schools",
+    "url": "https://www.w3schools.com",
     "critical": false
   },
   {
-    "name": "LinkedIn API",
-    "url": "https://api.linkedin.com/v2/people",
+    "name": "Can I Use",
+    "url": "https://caniuse.com",
     "critical": false
   },
   {
-    "name": "Slack API",
-    "url": "https://slack.com/api/api.test",
-    "critical": true
-  },
-  {
-    "name": "Discord API",
-    "url": "https://discord.com/api/v10/gateway",
+    "name": "Public APIs Directory",
+    "url": "https://api.publicapis.org/entries",
     "critical": false
   },
   {
-    "name": "Telegram Bot API",
-    "url": "https://api.telegram.org/bot/getMe",
+    "name": "REST Countries API",
+    "url": "https://restcountries.com/v3.1/name/india",
     "critical": false
   },
   {
-    "name": "WhatsApp Business API",
-    "url": "https://graph.facebook.com/v17.0/me",
+    "name": "Open Weather Map",
+    "url": "https://api.openweathermap.org/data/2.5/weather?q=Delhi&appid=demo",
     "critical": false
   },
   {
-    "name": "Twilio API",
-    "url": "https://api.twilio.com/2010-04-01/Accounts.json",
+    "name": "IP Info Service",
+    "url": "https://ipinfo.io/json",
     "critical": false
   },
   {
-    "name": "SendGrid API",
-    "url": "https://api.sendgrid.com/v3/mail/send",
+    "name": "UUID Generator API",
+    "url": "https://httpbin.org/uuid",
     "critical": false
   },
   {
-    "name": "Razorpay API",
-    "url": "https://api.razorpay.com/v1/payments",
-    "critical": true
-  },
-  {
-    "name": "Stripe API",
-    "url": "https://api.stripe.com/v1/charges",
-    "critical": true
-  },
-  {
-    "name": "PayPal API",
-    "url": "https://api.paypal.com/v1/oauth2/token",
+    "name": "Time API",
+    "url": "https://worldtimeapi.org/api/timezone/Asia/Kolkata",
     "critical": false
   },
   {
-    "name": "Google Maps API",
-    "url": "https://maps.googleapis.com/maps/api/geocode/json",
-    "critical": false
-  },
-  {
-    "name": "OpenWeatherMap API",
-    "url": "https://api.openweathermap.org/data/2.5/weather",
-    "critical": false
-  },
-  {
-    "name": "News API",
-    "url": "https://newsapi.org/v2/top-headlines",
-    "critical": false
-  },
-  {
-    "name": "CoinGecko API",
-    "url": "https://api.coingecko.com/api/v3/ping",
-    "critical": false
-  },
-  {
-    "name": "Alpha Vantage API",
-    "url": "https://www.alphavantage.co/query",
-    "critical": false
-  },
-  {
-    "name": "Indian Railways API",
-    "url": "https://indianrailapi.com/api/v2/TrainInformation",
-    "critical": false
-  },
-  {
-    "name": "NSDL Pan Verification",
-    "url": "https://www.nsdl.co.in/pan-aadhaar-link-status.php",
-    "critical": false
-  },
-  {
-    "name": "EPFO API",
-    "url": "https://unifiedportal-mem.epfindia.gov.in/memberinterface",
-    "critical": false
-  },
-  {
-    "name": "Aadhaar Verification API",
-    "url": "https://resident.uidai.gov.in/verify-email-mobile",
-    "critical": false
-  },
-  {
-    "name": "GST API",
-    "url": "https://api.mastergst.com/public/search",
-    "critical": false
-  },
-  {
-    "name": "India Post API",
+    "name": "India Post Pincode",
     "url": "https://api.postalpincode.in/pincode/110001",
     "critical": false
   },
   {
-    "name": "ISRO API",
-    "url": "https://isro.vercel.app/api/spacecrafts",
+    "name": "Indian Railways API",
+    "url": "https://indianrailapi.com/api/v2/TrainInformation/apikey/demo/TrainNumber/12002",
     "critical": false
   },
   {
-    "name": "Reserve Bank of India",
-    "url": "https://www.rbi.org.in",
+    "name": "JSON Test API",
+    "url": "https://dummyjson.com/products/1",
     "critical": false
   },
   {
-    "name": "YouTube API",
-    "url": "https://www.googleapis.com/youtube/v3/channels",
+    "name": "ReqRes Test API",
+    "url": "https://reqres.in/api/users/2",
     "critical": false
   },
   {
-    "name": "Instagram Basic Display API",
-    "url": "https://graph.instagram.com/me",
+    "name": "Cat Facts API",
+    "url": "https://catfact.ninja/fact",
     "critical": false
   },
   {
-    "name": "Twitter API v2",
-    "url": "https://api.twitter.com/2/tweets",
+    "name": "Joke API",
+    "url": "https://official-joke-api.appspot.com/random_joke",
     "critical": false
   },
   {
-    "name": "Facebook Graph API",
-    "url": "https://graph.facebook.com/v17.0/me",
+    "name": "Quote API",
+    "url": "https://api.quotable.io/random",
     "critical": false
   },
   {
-    "name": "Shopify API",
-    "url": "https://shopify.dev/api/admin-rest",
+    "name": "News API (Demo)",
+    "url": "https://newsapi.org/v2/top-headlines?country=in&apiKey=demo",
     "critical": false
   },
   {
-    "name": "WooCommerce API",
-    "url": "https://woocommerce.github.io/woocommerce-rest-api-docs",
+    "name": "CoinGecko Ping",
+    "url": "https://api.coingecko.com/api/v3/ping",
     "critical": false
   },
   {
-    "name": "Magento API",
-    "url": "https://devdocs.magento.com/guides/v2.4/rest/bk-rest.html",
+    "name": "Dog CEO API",
+    "url": "https://dog.ceo/api/breeds/image/random",
     "critical": false
   },
   {
-    "name": "Elasticsearch API",
-    "url": "https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html",
+    "name": "Random User API",
+    "url": "https://randomuser.me/api/",
+    "critical": false
+  },
+  {
+    "name": "Netlify Status",
+    "url": "https://www.netlifystatus.com/api/v2/status.json",
+    "critical": false
+  },
+  {
+    "name": "Vercel Status",
+    "url": "https://www.vercel-status.com/api/v2/status.json",
+    "critical": false
+  },
+  {
+    "name": "Cloudflare Status",
+    "url": "https://www.cloudflarestatus.com/api/v2/status.json",
     "critical": true
   },
   {
-    "name": "MongoDB Atlas API",
-    "url": "https://docs.atlas.mongodb.com/api",
-    "critical": true
-  },
-  {
-    "name": "Redis Cloud API",
-    "url": "https://api.redislabs.com/v1/subscriptions",
+    "name": "Discord Status",
+    "url": "https://discordstatus.com/api/v2/status.json",
     "critical": false
   },
   {
-    "name": "Firebase API",
-    "url": "https://firebase.googleapis.com/v1beta1/projects",
+    "name": "Slack Status",
+    "url": "https://status.slack.com/api/v2.0.0/current",
+    "critical": false
+  },
+  {
+    "name": "Flipkart Homepage",
+    "url": "https://www.flipkart.com",
     "critical": true
   },
   {
-    "name": "Supabase API",
-    "url": "https://supabase.com/docs/reference/api",
+    "name": "Amazon India",
+    "url": "https://www.amazon.in",
+    "critical": true
+  },
+  {
+    "name": "Swiggy Homepage",
+    "url": "https://www.swiggy.com",
+    "critical": false
+  },
+  {
+    "name": "Zomato Homepage",
+    "url": "https://www.zomato.com",
+    "critical": false
+  },
+  {
+    "name": "IRCTC Homepage",
+    "url": "https://www.irctc.co.in",
+    "critical": false
+  },
+  {
+    "name": "Paytm Homepage",
+    "url": "https://paytm.com",
+    "critical": false
+  },
+  {
+    "name": "PhonePe Homepage",
+    "url": "https://www.phonepe.com",
+    "critical": false
+  },
+  {
+    "name": "Ola Homepage",
+    "url": "https://www.olacabs.com",
+    "critical": false
+  },
+  {
+    "name": "Uber India",
+    "url": "https://www.uber.com/in/en/",
+    "critical": false
+  },
+  {
+    "name": "YouTube Homepage",
+    "url": "https://www.youtube.com",
+    "critical": false
+  },
+  {
+    "name": "LinkedIn Homepage",
+    "url": "https://www.linkedin.com",
+    "critical": false
+  },
+  {
+    "name": "Twitter Homepage",
+    "url": "https://twitter.com",
+    "critical": false
+  },
+  {
+    "name": "Instagram Homepage",
+    "url": "https://www.instagram.com",
+    "critical": false
+  },
+  {
+    "name": "Facebook Homepage",
+    "url": "https://www.facebook.com",
+    "critical": false
+  },
+  {
+    "name": "WhatsApp Web",
+    "url": "https://web.whatsapp.com",
+    "critical": false
+  },
+  {
+    "name": "Telegram Web",
+    "url": "https://web.telegram.org",
+    "critical": false
+  },
+  {
+    "name": "LeetCode Homepage",
+    "url": "https://leetcode.com",
+    "critical": false
+  },
+  {
+    "name": "HackerRank Homepage",
+    "url": "https://www.hackerrank.com",
+    "critical": false
+  },
+  {
+    "name": "Coursera Homepage",
+    "url": "https://www.coursera.org",
+    "critical": false
+  },
+  {
+    "name": "Udemy Homepage",
+    "url": "https://www.udemy.com",
+    "critical": false
+  },
+  {
+    "name": "edX Homepage",
+    "url": "https://www.edx.org",
+    "critical": false
+  },
+  {
+    "name": "Khan Academy",
+    "url": "https://www.khanacademy.org",
+    "critical": false
+  },
+  {
+    "name": "Codecademy",
+    "url": "https://www.codecademy.com",
+    "critical": false
+  },
+  {
+    "name": "FreeCodeCamp",
+    "url": "https://www.freecodecamp.org",
+    "critical": false
+  },
+  {
+    "name": "GitLab Homepage",
+    "url": "https://gitlab.com",
+    "critical": true
+  },
+  {
+    "name": "Bitbucket Homepage",
+    "url": "https://bitbucket.org",
+    "critical": false
+  },
+  {
+    "name": "SourceForge",
+    "url": "https://sourceforge.net",
+    "critical": false
+  },
+  {
+    "name": "Redis Homepage",
+    "url": "https://redis.io",
+    "critical": false
+  },
+  {
+    "name": "MongoDB Homepage",
+    "url": "https://www.mongodb.com",
+    "critical": false
+  },
+  {
+    "name": "PostgreSQL Homepage",
+    "url": "https://www.postgresql.org",
+    "critical": false
+  },
+  {
+    "name": "MySQL Homepage",
+    "url": "https://www.mysql.com",
+    "critical": false
+  },
+  {
+    "name": "Apache Homepage",
+    "url": "https://httpd.apache.org",
+    "critical": false
+  },
+  {
+    "name": "Nginx Homepage",
+    "url": "https://nginx.org",
+    "critical": false
+  },
+  {
+    "name": "Docker Homepage",
+    "url": "https://www.docker.com",
+    "critical": true
+  },
+  {
+    "name": "Kubernetes Homepage",
+    "url": "https://kubernetes.io",
+    "critical": true
+  },
+  {
+    "name": "Jenkins Homepage",
+    "url": "https://www.jenkins.io",
+    "critical": true
+  },
+  {
+    "name": "Terraform Homepage",
+    "url": "https://www.terraform.io",
+    "critical": false
+  },
+  {
+    "name": "Ansible Homepage",
+    "url": "https://www.ansible.com",
+    "critical": false
+  },
+  {
+    "name": "Prometheus Homepage",
+    "url": "https://prometheus.io",
+    "critical": false
+  },
+  {
+    "name": "Grafana Homepage",
+    "url": "https://grafana.com",
+    "critical": false
+  },
+  {
+    "name": "Elastic Homepage",
+    "url": "https://www.elastic.co",
+    "critical": false
+  },
+  {
+    "name": "Node.js Homepage",
+    "url": "https://nodejs.org",
+    "critical": true
+  },
+  {
+    "name": "Python Homepage",
+    "url": "https://www.python.org",
+    "critical": true
+  },
+  {
+    "name": "Java Oracle",
+    "url": "https://www.oracle.com/java/",
+    "critical": false
+  },
+  {
+    "name": "Go Language",
+    "url": "https://golang.org",
+    "critical": false
+  },
+  {
+    "name": "Rust Language",
+    "url": "https://www.rust-lang.org",
+    "critical": false
+  },
+  {
+    "name": "React Homepage",
+    "url": "https://reactjs.org",
+    "critical": false
+  },
+  {
+    "name": "Vue.js Homepage",
+    "url": "https://vuejs.org",
+    "critical": false
+  },
+  {
+    "name": "Angular Homepage",
+    "url": "https://angular.io",
+    "critical": false
+  },
+  {
+    "name": "Bootstrap Homepage",
+    "url": "https://getbootstrap.com",
+    "critical": false
+  },
+  {
+    "name": "Tailwind CSS",
+    "url": "https://tailwindcss.com",
+    "critical": false
+  },
+  {
+    "name": "VS Code Homepage",
+    "url": "https://code.visualstudio.com",
+    "critical": false
+  },
+  {
+    "name": "Postman Homepage",
+    "url": "https://www.postman.com",
+    "critical": false
+  },
+  {
+    "name": "Insomnia Homepage",
+    "url": "https://insomnia.rest",
+    "critical": false
+  },
+  {
+    "name": "JetBrains Homepage",
+    "url": "https://www.jetbrains.com",
+    "critical": false
+  },
+  {
+    "name": "Atlassian Homepage",
+    "url": "https://www.atlassian.com",
+    "critical": false
+  },
+  {
+    "name": "Slack Homepage",
+    "url": "https://slack.com",
+    "critical": false
+  },
+  {
+    "name": "Discord Homepage",
+    "url": "https://discord.com",
+    "critical": false
+  },
+  {
+    "name": "Zoom Homepage",
+    "url": "https://zoom.us",
+    "critical": false
+  },
+  {
+    "name": "Microsoft Teams",
+    "url": "https://www.microsoft.com/en-us/microsoft-teams/group-chat-software",
+    "critical": false
+  },
+  {
+    "name": "Google Meet",
+    "url": "https://meet.google.com",
+    "critical": false
+  },
+  {
+    "name": "Notion Homepage",
+    "url": "https://www.notion.so",
+    "critical": false
+  },
+  {
+    "name": "Trello Homepage",
+    "url": "https://trello.com",
+    "critical": false
+  },
+  {
+    "name": "Asana Homepage",
+    "url": "https://asana.com",
+    "critical": false
+  },
+  {
+    "name": "Jira Homepage",
+    "url": "https://www.atlassian.com/software/jira",
+    "critical": false
+  },
+  {
+    "name": "Confluence Homepage",
+    "url": "https://www.atlassian.com/software/confluence",
     "critical": false
   }
 ]
