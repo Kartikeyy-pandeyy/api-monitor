@@ -98,5 +98,340 @@
     "name": "Nobel Prize API",
     "url": "https://api.nobelprize.org/v1/prize.json?year=2023",
     "critical": false
+  },
+  {
+    "name": "Flipkart API",
+    "url": "https://www.flipkart.com/api/3/page/dynamic/search",
+    "critical": true
+  },
+  {
+    "name": "Amazon India",
+    "url": "https://www.amazon.in",
+    "critical": true
+  },
+  {
+    "name": "Myntra API",
+    "url": "https://www.myntra.com/gateway/v2/search",
+    "critical": false
+  },
+  {
+    "name": "Swiggy API",
+    "url": "https://www.swiggy.com/dapi/restaurants/list/v5",
+    "critical": true
+  },
+  {
+    "name": "Zomato API",
+    "url": "https://developers.zomato.com/api/v2.1/cuisines",
+    "critical": false
+  },
+  {
+    "name": "Paytm API",
+    "url": "https://paytm.com/api/v1/expresscheckout/verify",
+    "critical": true
+  },
+  {
+    "name": "PhonePe API",
+    "url": "https://www.phonepe.com/webapps/merchantonboarding",
+    "critical": true
+  },
+  {
+    "name": "UPI Payment Gateway",
+    "url": "https://api.upigateway.com/api/v1/status",
+    "critical": true
+  },
+  {
+    "name": "IRCTC API",
+    "url": "https://www.irctc.co.in/eticketing/protected/mapps01/altAvlEnq",
+    "critical": false
+  },
+  {
+    "name": "Ola API",
+    "url": "https://api.olacabs.com/v1/products",
+    "critical": false
+  },
+  {
+    "name": "Uber India API",
+    "url": "https://api.uber.com/v1/products",
+    "critical": false
+  },
+  {
+    "name": "GitHub API v4",
+    "url": "https://api.github.com/graphql",
+    "critical": true
+  },
+  {
+    "name": "GitLab API",
+    "url": "https://gitlab.com/api/v4/projects",
+    "critical": true
+  },
+  {
+    "name": "Bitbucket API",
+    "url": "https://api.bitbucket.org/2.0/repositories",
+    "critical": false
+  },
+  {
+    "name": "Docker Hub API",
+    "url": "https://hub.docker.com/v2/repositories",
+    "critical": true
+  },
+  {
+    "name": "NPM Registry",
+    "url": "https://registry.npmjs.org/express",
+    "critical": true
+  },
+  {
+    "name": "PyPI API",
+    "url": "https://pypi.org/pypi/django/json",
+    "critical": false
+  },
+  {
+    "name": "Maven Central",
+    "url": "https://search.maven.org/solrsearch/select",
+    "critical": false
+  },
+  {
+    "name": "Jenkins API",
+    "url": "https://ci.jenkins.io/api/json",
+    "critical": true
+  },
+  {
+    "name": "AWS Status",
+    "url": "https://status.aws.amazon.com/data.json",
+    "critical": true
+  },
+  {
+    "name": "Google Cloud Status",
+    "url": "https://status.cloud.google.com/incidents.json",
+    "critical": true
+  },
+  {
+    "name": "Azure Status",
+    "url": "https://status.azure.com/api/v2/status.json",
+    "critical": true
+  },
+  {
+    "name": "DigitalOcean API",
+    "url": "https://api.digitalocean.com/v2/account",
+    "critical": false
+  },
+  {
+    "name": "Heroku API",
+    "url": "https://api.heroku.com/apps",
+    "critical": false
+  },
+  {
+    "name": "Vercel API",
+    "url": "https://api.vercel.com/v6/deployments",
+    "critical": false
+  },
+  {
+    "name": "Netlify API",
+    "url": "https://api.netlify.com/api/v1/sites",
+    "critical": false
+  },
+  {
+    "name": "Stack Overflow API",
+    "url": "https://api.stackexchange.com/2.3/questions",
+    "critical": false
+  },
+  {
+    "name": "LeetCode API",
+    "url": "https://leetcode.com/api/problems/all",
+    "critical": false
+  },
+  {
+    "name": "HackerRank API",
+    "url": "https://www.hackerrank.com/rest/contests/master/challenges",
+    "critical": false
+  },
+  {
+    "name": "GeeksforGeeks",
+    "url": "https://www.geeksforgeeks.org",
+    "critical": false
+  },
+  {
+    "name": "Coursera API",
+    "url": "https://api.coursera.org/api/courses.v1",
+    "critical": false
+  },
+  {
+    "name": "Udemy API",
+    "url": "https://www.udemy.com/api-2.0/courses",
+    "critical": false
+  },
+  {
+    "name": "LinkedIn API",
+    "url": "https://api.linkedin.com/v2/people",
+    "critical": false
+  },
+  {
+    "name": "Slack API",
+    "url": "https://slack.com/api/api.test",
+    "critical": true
+  },
+  {
+    "name": "Discord API",
+    "url": "https://discord.com/api/v10/gateway",
+    "critical": false
+  },
+  {
+    "name": "Telegram Bot API",
+    "url": "https://api.telegram.org/bot/getMe",
+    "critical": false
+  },
+  {
+    "name": "WhatsApp Business API",
+    "url": "https://graph.facebook.com/v17.0/me",
+    "critical": false
+  },
+  {
+    "name": "Twilio API",
+    "url": "https://api.twilio.com/2010-04-01/Accounts.json",
+    "critical": false
+  },
+  {
+    "name": "SendGrid API",
+    "url": "https://api.sendgrid.com/v3/mail/send",
+    "critical": false
+  },
+  {
+    "name": "Razorpay API",
+    "url": "https://api.razorpay.com/v1/payments",
+    "critical": true
+  },
+  {
+    "name": "Stripe API",
+    "url": "https://api.stripe.com/v1/charges",
+    "critical": true
+  },
+  {
+    "name": "PayPal API",
+    "url": "https://api.paypal.com/v1/oauth2/token",
+    "critical": false
+  },
+  {
+    "name": "Google Maps API",
+    "url": "https://maps.googleapis.com/maps/api/geocode/json",
+    "critical": false
+  },
+  {
+    "name": "OpenWeatherMap API",
+    "url": "https://api.openweathermap.org/data/2.5/weather",
+    "critical": false
+  },
+  {
+    "name": "News API",
+    "url": "https://newsapi.org/v2/top-headlines",
+    "critical": false
+  },
+  {
+    "name": "CoinGecko API",
+    "url": "https://api.coingecko.com/api/v3/ping",
+    "critical": false
+  },
+  {
+    "name": "Alpha Vantage API",
+    "url": "https://www.alphavantage.co/query",
+    "critical": false
+  },
+  {
+    "name": "Indian Railways API",
+    "url": "https://indianrailapi.com/api/v2/TrainInformation",
+    "critical": false
+  },
+  {
+    "name": "NSDL Pan Verification",
+    "url": "https://www.nsdl.co.in/pan-aadhaar-link-status.php",
+    "critical": false
+  },
+  {
+    "name": "EPFO API",
+    "url": "https://unifiedportal-mem.epfindia.gov.in/memberinterface",
+    "critical": false
+  },
+  {
+    "name": "Aadhaar Verification API",
+    "url": "https://resident.uidai.gov.in/verify-email-mobile",
+    "critical": false
+  },
+  {
+    "name": "GST API",
+    "url": "https://api.mastergst.com/public/search",
+    "critical": false
+  },
+  {
+    "name": "India Post API",
+    "url": "https://api.postalpincode.in/pincode/110001",
+    "critical": false
+  },
+  {
+    "name": "ISRO API",
+    "url": "https://isro.vercel.app/api/spacecrafts",
+    "critical": false
+  },
+  {
+    "name": "Reserve Bank of India",
+    "url": "https://www.rbi.org.in",
+    "critical": false
+  },
+  {
+    "name": "YouTube API",
+    "url": "https://www.googleapis.com/youtube/v3/channels",
+    "critical": false
+  },
+  {
+    "name": "Instagram Basic Display API",
+    "url": "https://graph.instagram.com/me",
+    "critical": false
+  },
+  {
+    "name": "Twitter API v2",
+    "url": "https://api.twitter.com/2/tweets",
+    "critical": false
+  },
+  {
+    "name": "Facebook Graph API",
+    "url": "https://graph.facebook.com/v17.0/me",
+    "critical": false
+  },
+  {
+    "name": "Shopify API",
+    "url": "https://shopify.dev/api/admin-rest",
+    "critical": false
+  },
+  {
+    "name": "WooCommerce API",
+    "url": "https://woocommerce.github.io/woocommerce-rest-api-docs",
+    "critical": false
+  },
+  {
+    "name": "Magento API",
+    "url": "https://devdocs.magento.com/guides/v2.4/rest/bk-rest.html",
+    "critical": false
+  },
+  {
+    "name": "Elasticsearch API",
+    "url": "https://www.elastic.co/guide/en/elasticsearch/reference/current/rest-apis.html",
+    "critical": true
+  },
+  {
+    "name": "MongoDB Atlas API",
+    "url": "https://docs.atlas.mongodb.com/api",
+    "critical": true
+  },
+  {
+    "name": "Redis Cloud API",
+    "url": "https://api.redislabs.com/v1/subscriptions",
+    "critical": false
+  },
+  {
+    "name": "Firebase API",
+    "url": "https://firebase.googleapis.com/v1beta1/projects",
+    "critical": true
+  },
+  {
+    "name": "Supabase API",
+    "url": "https://supabase.com/docs/reference/api",
+    "critical": false
   }
 ]
