@@ -25,17 +25,12 @@ pipeline {
     stage('Prep (apis.json)') {
       steps {
         dir("${SUBDIR}") {
-          // Ensure folders exist
           sh 'mkdir -p checker frontend'
-
-          // If a JSON override is provided, write it safely (no shell expansion)
           script {
             if (params.APIS_JSON_OVERRIDE?.trim()) {
               writeFile file: 'checker/apis.json', text: params.APIS_JSON_OVERRIDE
             }
           }
-
-          // Verify apis.json exists and is non-empty
           sh 'test -s checker/apis.json || { echo "checker/apis.json missing or empty"; exit 1; }'
         }
       }
@@ -67,12 +62,10 @@ pipeline {
         dir("${SUBDIR}") {
           sh '''
             set -eux
-            # Put apis.json into the shared named volume (portable; no host bind-mounts)
             cat checker/apis.json | docker run --rm -i \
               -v ${VOLUME_NAME}:/data \
               alpine sh -c "cat > /data/apis.json"
 
-            # Run checker: read /data/apis.json, write /data/status.json
             docker run --rm \
               --network ${NETWORK_NAME} \
               -v ${VOLUME_NAME}:/data \
@@ -97,15 +90,21 @@ pipeline {
 
     stage('Refresh frontend container') {
       steps {
-        sh '''
-          set -eux
-          docker rm -f ${FRONTEND_NAME} >/dev/null 2>&1 || true
-          docker run -d --name ${FRONTEND_NAME} \
-            --network ${NETWORK_NAME} \
-            -p ${FRONTEND_PORT}:80 \
-            -v ${VOLUME_NAME}:/usr/share/nginx/html/data:ro \
-            ${FRONTEND_IMAGE}
-        '''
+        withCredentials([usernamePassword(credentialsId: 'jenkins-api', usernameVariable: 'JUSER', passwordVariable: 'JTOKEN')]) {
+          sh '''
+            set -eux
+            docker rm -f ${FRONTEND_NAME} >/dev/null 2>&1 || true
+            docker run -d --name ${FRONTEND_NAME} \
+              --network ${NETWORK_NAME} \
+              -p ${FRONTEND_PORT}:80 \
+              -v ${VOLUME_NAME}:/app/public/data:ro \
+              -e JENKINS_URL=http://host.docker.internal:8080 \
+              -e JENKINS_USER=${JUSER} \
+              -e JENKINS_TOKEN=${JTOKEN} \
+              -e JENKINS_JOB=api-monitor-local \
+              ${FRONTEND_IMAGE}
+          '''
+        }
       }
     }
   }

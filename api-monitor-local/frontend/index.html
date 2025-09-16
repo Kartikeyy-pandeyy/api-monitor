@@ -5,60 +5,65 @@
   <title>Local API Status</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { font-family: system-ui, sans-serif; margin: 24px; }
-    h1 { margin-bottom: 8px; }
-    .toolbar { margin: 12px 0 20px; display: flex; gap: 12px; align-items: center; }
-    button, a.button { padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; text-decoration: none; cursor: pointer; }
+    :root { --muted:#6b7280; --good:#0b7b34; --bad:#a30d1a; --chip:#f3f4f6; --card:#ffffff; --line:#e5e7eb; }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; background:#f9fafb; color:#0f172a;}
+    h1 { margin: 0 0 4px; font-size: 22px; }
+    .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
+    .bar { display:flex; gap:10px; align-items:center; margin-bottom: 16px; flex-wrap: wrap; }
+    .btn { padding: 8px 12px; border-radius: 10px; border:1px solid var(--line); background: #fff; cursor:pointer; }
+    .btn[disabled] { opacity: .6; cursor: not-allowed; }
+    .chip { background: var(--chip); border:1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 12px; }
+    .card { background: var(--card); border:1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
     table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
-    .ok { background: #e8f6ec; color: #0b7b34; padding: 2px 8px; border-radius: 999px; }
-    .bad { background: #fde8ea; color: #a30d1a; padding: 2px 8px; border-radius: 999px; }
+    th, td { padding: 12px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; }
+    th { font-weight:600; color:#334155; background:#f8fafc; }
+    .ok { background:#e8f6ec; color:var(--good); padding: 4px 10px; border-radius:999px; font-weight:600; }
+    .bad { background:#fde8ea; color:var(--bad); padding: 4px 10px; border-radius:999px; font-weight:600; }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-    footer { margin-top: 24px; color: #666; font-size: 12px; }
+    .right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+    .spinner { width:16px; height:16px; border:2px solid #cbd5e1; border-top-color:#334155; border-radius:50%; animation:spin 1s linear infinite; display:none; }
+    .spinner.show { display:inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
-  <h1>Local API Status</h1>
-  <div class="toolbar">
-    <span>Last generated: <span id="generatedAt">–</span></span>
-    <!-- Opens Jenkins job build URL in a new tab; replace with your job path -->
-    <a id="buildNowLink" class="button" target="_blank" rel="noopener">Trigger Jenkins “Build Now”</a>
-    <button id="refreshBtn">Refresh</button>
+  <div class="bar">
+    <div>
+      <h1>Local API Status</h1>
+      <div class="sub">Reads <span class="mono">/data/status.json</span> from a Docker volume</div>
+    </div>
+    <div class="right">
+      <span class="chip">Last generated: <span id="generatedAt">—</span></span>
+      <span class="chip">Entries: <span id="count">0</span></span>
+      <div id="spin" class="spinner"></div>
+      <button id="triggerBtn" class="btn">Trigger Jenkins & Refresh</button>
+      <button id="refreshBtn" class="btn">Refresh</button>
+    </div>
   </div>
 
-  <table id="table">
-    <thead>
-      <tr>
-        <th>Name</th><th>URL</th><th>Status</th><th>Latency</th><th>Checked At</th><th>Error</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <footer>
-    Serving <span class="mono">/data/status.json</span> from a Docker volume. Click “Build Now” to regenerate.
-  </footer>
+  <div class="card">
+    <table id="table">
+      <thead>
+        <tr>
+          <th>Name</th><th>URL</th><th>Status</th><th>Latency</th><th>Checked At</th><th>Error</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
 <script>
   const STATUS_URL = "/data/status.json";
-  // Set your Jenkins job URL here (will just open in a new tab)
-  const JENKINS_BUILD_URL = "http://localhost:8080/job/api-monitor-local/build?delay=0sec";
-  document.getElementById('buildNowLink').href = JENKINS_BUILD_URL;
 
-  async function load() {
-    try {
-      const res = await fetch(STATUS_URL, { cache: "no-store" });
-      if (!res.ok) throw new Error("No status.json yet. Run Jenkins pipeline.");
-      const data = await res.json();
-      render(data);
-    } catch (e) {
-      render({ generated_at: "—", results: [] });
-      console.warn(e);
-    }
+  async function fetchStatus() {
+    const res = await fetch(STATUS_URL, { cache: "no-store" });
+    if (!res.ok) return { generated_at: null, results: [] };
+    return res.json();
   }
 
   function render(data) {
     document.getElementById('generatedAt').textContent = data.generated_at || "—";
+    document.getElementById('count').textContent = (data.results || []).length;
     const tbody = document.querySelector("#table tbody");
     tbody.innerHTML = "";
     (data.results || []).forEach(r => {
@@ -75,7 +80,35 @@
     });
   }
 
+  async function load() { render(await fetchStatus()); }
+
+  async function triggerAndPoll() {
+    const spin = document.getElementById('spin');
+    const btn = document.getElementById('triggerBtn');
+    btn.disabled = true; spin.classList.add('show');
+
+    // current stamp to detect change
+    const before = (await fetchStatus()).generated_at;
+
+    // call server-side trigger
+    const resp = await fetch("/trigger", { method: "POST" }).catch(() => ({ ok: false }));
+    if (!resp.ok) { btn.disabled = false; spin.classList.remove('show'); return; }
+
+    // poll until generated_at changes (or 60s timeout)
+    const deadline = Date.now() + 60000;
+    while (Date.now() < deadline) {
+      const data = await fetchStatus();
+      if (data.generated_at && data.generated_at !== before) {
+        render(data); break;
+      }
+      await new Promise(r => setTimeout(r, 2000));
+    }
+
+    btn.disabled = false; spin.classList.remove('show');
+  }
+
   document.getElementById('refreshBtn').addEventListener('click', load);
+  document.getElementById('triggerBtn').addEventListener('click', triggerAndPoll);
   load();
 </script>
 </body>

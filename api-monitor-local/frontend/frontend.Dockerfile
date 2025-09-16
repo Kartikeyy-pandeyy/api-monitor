@@ -1,7 +1,14 @@
-FROM nginx:alpine
+FROM node:18-alpine
+WORKDIR /app
 
-# Copy static site
-COPY frontend/index.html /usr/share/nginx/html/index.html
+# install minimal deps for server (express + node-fetch)
+RUN npm init -y && npm install express node-fetch@3
 
-# status.json will appear under /usr/share/nginx/html/data via a mounted volume
-# Nothing else to do; nginx will serve /index.html and /data/status.json
+# copy app files
+COPY frontend/server.js ./server.js
+COPY frontend/index.html ./public/index.html
+
+# /app/public/data will be mounted via volume
+ENV PORT=80
+EXPOSE 80
+CMD ["node", "server.js"]
