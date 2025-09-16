@@ -1,20 +1,21 @@
 pipeline {
   agent any
-  options { skipDefaultCheckout(true) }
+  options { skipDefaultCheckout(true) }    // don't do the default; we'll do an explicit, clean checkout
+
   environment {
     AWS_REGION         = 'ap-east-1'
-    AWS_CREDENTIALS_ID = 'jenkins'              // must match Jenkins → Credentials ID
+    AWS_CREDENTIALS_ID = 'jenkins'          // Jenkins > Credentials ID
     S3_BUCKET          = 'api-monitor-data-bu'
   }
 
-  triggers {
-    cron('H/10 * * * *')
-  }
+  triggers { cron('H/10 * * * *') }
 
   stages {
     stage('Checkout') {
       steps {
-        git branch: 'main', url: 'https://github.com/Kartikeyy-pandeyy/api-monitor.git'
+        deleteDir()                         // nuke any half-initialized workspace
+        checkout scm                        // checkout the same repo/branch Jenkinsfile came from
+        sh 'git log -1 --oneline'
       }
     }
 
@@ -41,15 +42,13 @@ pipeline {
 
     stage('Upload to S3') {
       steps {
-        withCredentials([[
-          $class: 'AmazonWebServicesCredentialsBinding',
-          credentialsId: "${env.AWS_CREDENTIALS_ID}",
-          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
-          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
-        ]]) {
+        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',
+                          credentialsId: env.AWS_CREDENTIALS_ID,
+                          accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                          secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
           sh '''
-            test -f frontend/status.json  && echo "status.json present"  || (echo "Missing status.json" && exit 1)
-            test -f frontend/history.json && echo "history.json present" || (echo "Missing history.json" && exit 1)
+            test -f frontend/status.json  || { echo "Missing frontend/status.json";  exit 1; }
+            test -f frontend/history.json || { echo "Missing frontend/history.json"; exit 1; }
 
             aws s3 cp frontend/status.json  s3://$S3_BUCKET/frontend/status.json  --region $AWS_REGION
             aws s3 cp frontend/history.json s3://$S3_BUCKET/frontend/history.json --region $AWS_REGION
@@ -66,8 +65,6 @@ pipeline {
   }
 
   post {
-    failure {
-      echo "Pipeline failed! Consider sending alert here."
-    }
+    failure { echo 'Pipeline failed! Consider sending alert here.' }
   }
 }
