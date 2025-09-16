@@ -1,0 +1,21 @@
+services:
+  checker:
+    build:
+      context: .
+      dockerfile: checker/checker.Dockerfile
+    volumes:
+      - apidata:/data
+      - ./checker/apis.json:/app/checker/apis.json:ro
+    network_mode: bridge
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/frontend.Dockerfile
+    ports:
+      - "8088:80"
+    volumes:
+      - apidata:/usr/share/nginx/html/data:ro
+
+volumes:
+  apidata:
