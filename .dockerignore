@@ -1,2 +1,7 @@
-node_modules
-*.log
+.git
+.gitignore
+Dockerfile
+docker-compose.yml
+
+# Skip any host node_modules; the image runs npm ci
+**/node_modules

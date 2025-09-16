@@ -1,24 +1,25 @@
+# Dockerfile (repo root)
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy app code
-COPY checker/ ./checker
-# Copy endpoints list into the image
-COPY apis.json ./checker/apis.json
-
-# Install deps (works whether you have a package.json or not)
+# 1) Install deps with cache-friendly layers
+#    - If you have checker/package*.json, use them
+COPY checker/package*.json ./checker/
 RUN set -eux; \
     if [ -f checker/package.json ]; then \
-      cd checker && npm ci; \
+      cd checker && npm ci --only=production; \
     else \
       cd checker && npm init -y && npm install axios; \
     fi
 
-# Make output dir configurable; Jenkins will bind-mount here
+# 2) Copy the checker source (includes apis.json that lives in checker/)
+COPY checker/ ./checker
+
+# 3) Runtime env
 ENV OUTPUT_DIR=/app/frontend
-# Let checker know where the endpoints file lives (optional but robust)
+#    Your endpoints file is checker/apis.json (plural)
 ENV ENDPOINTS_FILE=/app/checker/apis.json
 
-# Default command runs the checker
+# 4) Default command: run the checker
 CMD ["node", "checker/checker.js"]
