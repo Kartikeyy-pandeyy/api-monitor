@@ -67,6 +67,7 @@ pipeline {
 
 
 
+
     stage('Upload to S3') {
       steps {
         withCredentials([[$class: 'AmazonWebServicesCredentialsBinding',
