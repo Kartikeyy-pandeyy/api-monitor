@@ -1,10 +1,6 @@
 pipeline {
   agent any
 
-  parameters {
-    text(name: 'APIS_JSON_OVERRIDE', defaultValue: '', description: 'Optional: replace checker/apis.json contents for this run')
-  }
-
   environment {
     CHECKER_IMAGE   = "api-checker:local"
     FRONTEND_IMAGE  = "api-frontend:local"
@@ -13,6 +9,9 @@ pipeline {
     FRONTEND_PORT   = "8088"
     NETWORK_NAME    = "apimon"
     SUBDIR          = "api-monitor-local"
+
+    // Pull the entire apis.json content from a Secret Text credential
+    APIS_JSON       = credentials('apis-json-secret')
   }
 
   options { timestamps() }
@@ -20,20 +19,6 @@ pipeline {
   stages {
     stage('Checkout') {
       steps { checkout scm }
-    }
-
-    stage('Prep (apis.json)') {
-      steps {
-        dir("${SUBDIR}") {
-          sh 'mkdir -p checker frontend'
-          script {
-            if (params.APIS_JSON_OVERRIDE?.trim()) {
-              writeFile file: 'checker/apis.json', text: params.APIS_JSON_OVERRIDE
-            }
-          }
-          sh 'test -s checker/apis.json || { echo "checker/apis.json missing or empty"; exit 1; }'
-        }
-      }
     }
 
     stage('Docker setup') {
@@ -59,21 +44,23 @@ pipeline {
 
     stage('Run checker (generate status.json)') {
       steps {
-        dir("${SUBDIR}") {
-          sh '''
-            set -eux
-            cat checker/apis.json | docker run --rm -i \
-              -v ${VOLUME_NAME}:/data \
-              alpine sh -c "cat > /data/apis.json"
+        // Write the secret JSON into the shared volume as /data/apis.json, then run the checker
+        sh '''
+          set -eux
 
-            docker run --rm \
-              --network ${NETWORK_NAME} \
-              -v ${VOLUME_NAME}:/data \
-              -e ENDPOINTS_FILE=/data/apis.json \
-              -e OUTPUT_FILE=/data/status.json \
-              ${CHECKER_IMAGE}
-          '''
-        }
+          # Write APIS_JSON from Jenkins credential into the named volume
+          printf "%s" "$APIS_JSON" | docker run --rm -i \
+            -v ${VOLUME_NAME}:/data \
+            alpine sh -c "cat > /data/apis.json"
+
+          # Run checker: read /data/apis.json, write /data/status.json
+          docker run --rm \
+            --network ${NETWORK_NAME} \
+            -v ${VOLUME_NAME}:/data \
+            -e ENDPOINTS_FILE=/data/apis.json \
+            -e OUTPUT_FILE=/data/status.json \
+            ${CHECKER_IMAGE}
+        '''
       }
     }
 
@@ -90,21 +77,15 @@ pipeline {
 
     stage('Refresh frontend container') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'kartikeyypandeyy', usernameVariable: 'JUSER', passwordVariable: 'JTOKEN')]) {
-          sh '''
-            set -eux
-            docker rm -f ${FRONTEND_NAME} >/dev/null 2>&1 || true
-            docker run -d --name ${FRONTEND_NAME} \
-              --network ${NETWORK_NAME} \
-              -p ${FRONTEND_PORT}:80 \
-              -v ${VOLUME_NAME}:/app/public/data:ro \
-              -e JENKINS_URL=http://host.docker.internal:8080 \
-              -e JENKINS_USER=${JUSER} \
-              -e JENKINS_TOKEN=${JTOKEN} \
-              -e JENKINS_JOB=api-monitor-local \
-              ${FRONTEND_IMAGE}
-          '''
-        }
+        sh '''
+          set -eux
+          docker rm -f ${FRONTEND_NAME} >/dev/null 2>&1 || true
+          docker run -d --name ${FRONTEND_NAME} \
+            --network ${NETWORK_NAME} \
+            -p ${FRONTEND_PORT}:80 \
+            -v ${VOLUME_NAME}:/app/public/data:ro \
+            ${FRONTEND_IMAGE}
+        '''
       }
     }
   }

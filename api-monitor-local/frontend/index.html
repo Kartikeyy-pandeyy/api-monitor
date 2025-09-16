@@ -10,8 +10,6 @@
     h1 { margin: 0 0 4px; font-size: 22px; }
     .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
     .bar { display:flex; gap:10px; align-items:center; margin-bottom: 16px; flex-wrap: wrap; }
-    .btn { padding: 8px 12px; border-radius: 10px; border:1px solid var(--line); background: #fff; cursor:pointer; }
-    .btn[disabled] { opacity: .6; cursor: not-allowed; }
     .chip { background: var(--chip); border:1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 12px; }
     .card { background: var(--card); border:1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
     table { width: 100%; border-collapse: collapse; }
@@ -21,9 +19,6 @@
     .bad { background:#fde8ea; color:var(--bad); padding: 4px 10px; border-radius:999px; font-weight:600; }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
     .right { margin-left:auto; display:flex; align-items:center; gap:10px; }
-    .spinner { width:16px; height:16px; border:2px solid #cbd5e1; border-top-color:#334155; border-radius:50%; animation:spin 1s linear infinite; display:none; }
-    .spinner.show { display:inline-block; }
-    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -35,9 +30,6 @@
     <div class="right">
       <span class="chip">Last generated: <span id="generatedAt">—</span></span>
       <span class="chip">Entries: <span id="count">0</span></span>
-      <div id="spin" class="spinner"></div>
-      <button id="triggerBtn" class="btn">Trigger Jenkins & Refresh</button>
-      <button id="refreshBtn" class="btn">Refresh</button>
     </div>
   </div>
 
@@ -82,34 +74,11 @@
 
   async function load() { render(await fetchStatus()); }
 
-  async function triggerAndPoll() {
-    const spin = document.getElementById('spin');
-    const btn = document.getElementById('triggerBtn');
-    btn.disabled = true; spin.classList.add('show');
-
-    // current stamp to detect change
-    const before = (await fetchStatus()).generated_at;
-
-    // call server-side trigger
-    const resp = await fetch("/trigger", { method: "POST" }).catch(() => ({ ok: false }));
-    if (!resp.ok) { btn.disabled = false; spin.classList.remove('show'); return; }
-
-    // poll until generated_at changes (or 60s timeout)
-    const deadline = Date.now() + 60000;
-    while (Date.now() < deadline) {
-      const data = await fetchStatus();
-      if (data.generated_at && data.generated_at !== before) {
-        render(data); break;
-      }
-      await new Promise(r => setTimeout(r, 2000));
-    }
-
-    btn.disabled = false; spin.classList.remove('show');
-  }
-
-  document.getElementById('refreshBtn').addEventListener('click', load);
-  document.getElementById('triggerBtn').addEventListener('click', triggerAndPoll);
+  // Initial load (no buttons, no polling)
   load();
+
+  // If you ever want light auto-refresh without buttons, uncomment:
+  // setInterval(load, 15000); // refresh every 15s
 </script>
 </body>
 </html>
