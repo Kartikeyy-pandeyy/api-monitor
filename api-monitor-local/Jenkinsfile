@@ -1,0 +1,119 @@
+pipeline {
+  agent any
+
+  // Optional: override apis.json from the job UI
+  parameters {
+    text(name: 'APIS_JSON_OVERRIDE', defaultValue: '', description: 'If set, replaces checker/apis.json for this run')
+  }
+
+  environment {
+    CHECKER_IMAGE   = "api-checker:local"
+    FRONTEND_IMAGE  = "api-frontend:local"
+    VOLUME_NAME     = "apidata"
+    FRONTEND_NAME   = "api-frontend"
+    FRONTEND_PORT   = "8088"
+    NETWORK_NAME    = "apimon"
+    SUBDIR          = "api-monitor-local"
+  }
+
+  options { timestamps() }
+
+  stages {
+    stage('Checkout') {
+      steps { checkout scm }
+    }
+
+    stage('Prep (apis.json)') {
+      steps {
+        dir("${SUBDIR}") {
+          sh '''
+            set -eux
+            # If a JSON override is provided, write it into checker/apis.json in the workspace
+            if [ -n "${APIS_JSON_OVERRIDE}" ]; then
+              printf "%s\n" "${APIS_JSON_OVERRIDE}" > checker/apis.json
+            fi
+            test -s checker/apis.json
+          '''
+        }
+      }
+    }
+
+    stage('Docker setup') {
+      steps {
+        sh '''
+          set -eux
+          docker volume create ${VOLUME_NAME} >/dev/null
+          docker network create ${NETWORK_NAME} >/dev/null 2>&1 || true
+        '''
+      }
+    }
+
+    stage('Build checker image') {
+      steps {
+        dir("${SUBDIR}") {
+          sh '''
+            set -eux
+            docker build -t ${CHECKER_IMAGE} -f checker/checker.Dockerfile .
+          '''
+        }
+      }
+    }
+
+    stage('Run checker (generate status.json)') {
+      steps {
+        dir("${SUBDIR}") {
+          sh '''
+            set -eux
+            # Put apis.json into the shared named volume (portable; no host bind-mounts)
+            cat checker/apis.json | docker run --rm -i \
+              -v ${VOLUME_NAME}:/data \
+              alpine sh -c "cat > /data/apis.json"
+
+            # Run checker: read /data/apis.json, write /data/status.json
+            docker run --rm \
+              --network ${NETWORK_NAME} \
+              -v ${VOLUME_NAME}:/data \
+              -e ENDPOINTS_FILE=/data/apis.json \
+              -e OUTPUT_FILE=/data/status.json \
+              ${CHECKER_IMAGE}
+          '''
+        }
+      }
+    }
+
+    stage('Build frontend image') {
+      steps {
+        dir("${SUBDIR}") {
+          sh '''
+            set -eux
+            docker build -t ${FRONTEND_IMAGE} -f frontend/frontend.Dockerfile .
+          '''
+        }
+      }
+    }
+
+    stage('Refresh frontend container') {
+      steps {
+        sh '''
+          set -eux
+          docker rm -f ${FRONTEND_NAME} >/dev/null 2>&1 || true
+          docker run -d --name ${FRONTEND_NAME} \
+            --network ${NETWORK_NAME} \
+            -p ${FRONTEND_PORT}:80 \
+            -v ${VOLUME_NAME}:/usr/share/nginx/html/data:ro \
+            ${FRONTEND_IMAGE}
+        '''
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "✅ Frontend available at: http://localhost:${FRONTEND_PORT}"
+      echo "ℹ️ status.json stored in Docker volume: ${VOLUME_NAME}"
+    }
+    failure {
+      echo "❌ Build failed. Check logs above."
+    }
+  }
+}
