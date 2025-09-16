@@ -3,7 +3,7 @@ pipeline {
   options { skipDefaultCheckout(true) }    // don't do the default; we'll do an explicit, clean checkout
 
   environment {
-    AWS_REGION         = 'ap-east-1'
+    AWS_REGION         = 'us-east-1'
     AWS_CREDENTIALS_ID = 'jenkins'          // Jenkins > Credentials ID
     S3_BUCKET          = 'api-monitor-data-bu'
   }
