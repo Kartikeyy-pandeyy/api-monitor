@@ -30,11 +30,6 @@
     "critical": false
   },
   {
-    "name": "HTTP 404 Test",
-    "url": "https://httpstat.us/404",
-    "critical": false
-  },
-  {
     "name": "HTTP 500 Test",
     "url": "https://httpstat.us/500",
     "critical": false
@@ -48,11 +43,6 @@
     "name": "PyPI Package Info",
     "url": "https://pypi.org/pypi/django/json",
     "critical": false
-  },
-  {
-    "name": "Docker Hub Registry",
-    "url": "https://registry-1.docker.io/v2/",
-    "critical": true
   },
   {
     "name": "Maven Central",
@@ -95,18 +85,8 @@
     "critical": false
   },
   {
-    "name": "Public APIs Directory",
-    "url": "https://api.publicapis.org/entries",
-    "critical": false
-  },
-  {
     "name": "REST Countries API",
     "url": "https://restcountries.com/v3.1/name/india",
-    "critical": false
-  },
-  {
-    "name": "Open Weather Map",
-    "url": "https://api.openweathermap.org/data/2.5/weather?q=Delhi&appid=demo",
     "critical": false
   },
   {
@@ -117,11 +97,6 @@
   {
     "name": "UUID Generator API",
     "url": "https://httpbin.org/uuid",
-    "critical": false
-  },
-  {
-    "name": "Time API",
-    "url": "https://worldtimeapi.org/api/timezone/Asia/Kolkata",
     "critical": false
   },
   {
@@ -152,16 +127,6 @@
   {
     "name": "Joke API",
     "url": "https://official-joke-api.appspot.com/random_joke",
-    "critical": false
-  },
-  {
-    "name": "Quote API",
-    "url": "https://api.quotable.io/random",
-    "critical": false
-  },
-  {
-    "name": "News API (Demo)",
-    "url": "https://newsapi.org/v2/top-headlines?country=in&apiKey=demo",
     "critical": false
   },
   {
@@ -205,29 +170,9 @@
     "critical": false
   },
   {
-    "name": "Flipkart Homepage",
-    "url": "https://www.flipkart.com",
-    "critical": true
-  },
-  {
     "name": "Amazon India",
     "url": "https://www.amazon.in",
     "critical": true
-  },
-  {
-    "name": "Swiggy Homepage",
-    "url": "https://www.swiggy.com",
-    "critical": false
-  },
-  {
-    "name": "Zomato Homepage",
-    "url": "https://www.zomato.com",
-    "critical": false
-  },
-  {
-    "name": "IRCTC Homepage",
-    "url": "https://www.irctc.co.in",
-    "critical": false
   },
   {
     "name": "Paytm Homepage",
@@ -242,11 +187,6 @@
   {
     "name": "Ola Homepage",
     "url": "https://www.olacabs.com",
-    "critical": false
-  },
-  {
-    "name": "Uber India",
-    "url": "https://www.uber.com/in/en/",
     "critical": false
   },
   {
@@ -285,25 +225,11 @@
     "critical": false
   },
   {
-    "name": "LeetCode Homepage",
-    "url": "https://leetcode.com",
-    "critical": false
-  },
-  {
-    "name": "HackerRank Homepage",
-    "url": "https://www.hackerrank.com",
-    "critical": false
-  },
-  {
     "name": "Coursera Homepage",
     "url": "https://www.coursera.org",
     "critical": false
   },
-  {
-    "name": "Udemy Homepage",
-    "url": "https://www.udemy.com",
-    "critical": false
-  },
+  
   {
     "name": "edX Homepage",
     "url": "https://www.edx.org",
@@ -383,11 +309,6 @@
     "name": "Jenkins Homepage",
     "url": "https://www.jenkins.io",
     "critical": true
-  },
-  {
-    "name": "Terraform Homepage",
-    "url": "https://www.terraform.io",
-    "critical": false
   },
   {
     "name": "Ansible Homepage",
