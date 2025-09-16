@@ -2,12 +2,11 @@ pipeline {
   agent any
 
   environment {
-    AWS_REGION        = 'ap-east-1'
-    AWS_CREDENTIALS_ID = 'jenkins'                    // Jenkins Credentials ID you created
-    S3_BUCKET         = 'api-monitor-data-bu'
+    AWS_REGION         = 'ap-east-1'
+    AWS_CREDENTIALS_ID = 'jenkins'              // must match Jenkins → Credentials ID
+    S3_BUCKET          = 'api-monitor-data-bu'
   }
 
-  // optional: keep your poll/cron
   triggers {
     cron('H/10 * * * *')
   }
@@ -15,21 +14,27 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        // single checkout (remove the extra implicit checkout)
         git branch: 'main', url: 'https://github.com/Kartikeyy-pandeyy/api-monitor.git'
+      }
+    }
+
+    stage('Docker Sanity') {
+      steps {
+        sh '''
+          docker --version
+          docker info | head -n 12
+        '''
       }
     }
 
     stage('Build Docker Image') {
       steps {
-        // Linux shell, not Windows batch
         sh 'docker build -t api-checker:latest .'
       }
     }
 
     stage('Run API Checker') {
       steps {
-        // use forward slashes and $WORKSPACE on Linux
         sh 'docker run --rm -v "$WORKSPACE/frontend:/app/frontend" api-checker:latest'
       }
     }
@@ -43,7 +48,10 @@ pipeline {
           secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
         ]]) {
           sh '''
-            aws s3 cp frontend/status.json  s3://$S3_BUCKET/frontend/status.json --region $AWS_REGION
+            test -f frontend/status.json  && echo "status.json present"  || (echo "Missing status.json" && exit 1)
+            test -f frontend/history.json && echo "history.json present" || (echo "Missing history.json" && exit 1)
+
+            aws s3 cp frontend/status.json  s3://$S3_BUCKET/frontend/status.json  --region $AWS_REGION
             aws s3 cp frontend/history.json s3://$S3_BUCKET/frontend/history.json --region $AWS_REGION
           '''
         }
