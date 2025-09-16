@@ -1,9 +1,8 @@
 pipeline {
   agent any
 
-  // Optional: override apis.json from the job UI
   parameters {
-    text(name: 'APIS_JSON_OVERRIDE', defaultValue: '', description: 'If set, replaces checker/apis.json for this run')
+    text(name: 'APIS_JSON_OVERRIDE', defaultValue: '', description: 'Optional: replace checker/apis.json contents for this run')
   }
 
   environment {
@@ -26,14 +25,18 @@ pipeline {
     stage('Prep (apis.json)') {
       steps {
         dir("${SUBDIR}") {
-          sh '''
-            set -eux
-            # If a JSON override is provided, write it into checker/apis.json in the workspace
-            if [ -n "${APIS_JSON_OVERRIDE}" ]; then
-              printf "%s\n" "${APIS_JSON_OVERRIDE}" > checker/apis.json
-            fi
-            test -s checker/apis.json
-          '''
+          // Ensure folders exist
+          sh 'mkdir -p checker frontend'
+
+          // If a JSON override is provided, write it safely (no shell expansion)
+          script {
+            if (params.APIS_JSON_OVERRIDE?.trim()) {
+              writeFile file: 'checker/apis.json', text: params.APIS_JSON_OVERRIDE
+            }
+          }
+
+          // Verify apis.json exists and is non-empty
+          sh 'test -s checker/apis.json || { echo "checker/apis.json missing or empty"; exit 1; }'
         }
       }
     }
