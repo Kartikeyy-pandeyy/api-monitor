@@ -1,6 +1,6 @@
 pipeline {
   agent any
-
+  options { skipDefaultCheckout(true) }
   environment {
     AWS_REGION         = 'ap-east-1'
     AWS_CREDENTIALS_ID = 'jenkins'              // must match Jenkins → Credentials ID
