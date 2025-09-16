@@ -90,7 +90,7 @@ pipeline {
 
     stage('Refresh frontend container') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'jenkins-api', usernameVariable: 'JUSER', passwordVariable: 'JTOKEN')]) {
+        withCredentials([usernamePassword(credentialsId: 'kartikeyypandeyy', usernameVariable: 'JUSER', passwordVariable: 'JTOKEN')]) {
           sh '''
             set -eux
             docker rm -f ${FRONTEND_NAME} >/dev/null 2>&1 || true
