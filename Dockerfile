@@ -1,22 +1,24 @@
-# Use Node base
 FROM node:18-alpine
 
-# App dir
 WORKDIR /app
 
-# Copy your checker sources (adjust if your repo layout differs)
+# Copy app code
 COPY checker/ ./checker
+# Copy endpoints list into the image
+COPY apis.json ./checker/apis.json
 
-# If you already have a package.json in repo, use npm ci; otherwise create minimal deps
-# This path handles both cases gracefully
-RUN if [ -f checker/package.json ]; then \
+# Install deps (works whether you have a package.json or not)
+RUN set -eux; \
+    if [ -f checker/package.json ]; then \
       cd checker && npm ci; \
     else \
       cd checker && npm init -y && npm install axios; \
     fi
 
-# Default output directory inside the container
+# Make output dir configurable; Jenkins will bind-mount here
 ENV OUTPUT_DIR=/app/frontend
+# Let checker know where the endpoints file lives (optional but robust)
+ENV ENDPOINTS_FILE=/app/checker/apis.json
 
-# Run the checker; the Jenkins pipeline will mount /app/frontend from the workspace
+# Default command runs the checker
 CMD ["node", "checker/checker.js"]

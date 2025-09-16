@@ -35,10 +35,20 @@ pipeline {
     }
 
     stage('Run API Checker') {
-      steps {
-        sh 'docker run --rm -v "$WORKSPACE/frontend:/app/frontend" api-checker:latest'
-      }
-    }
+  steps {
+    sh '''
+      set -eux
+      mkdir -p frontend
+      docker run --rm \
+        -e OUTPUT_DIR=/app/frontend \
+        -e ENDPOINTS_FILE=/app/checker/apis.json \
+        -v "$WORKSPACE/frontend:/app/frontend" \
+        api-checker:latest
+      ls -la frontend
+    '''
+  }
+}
+
 
     stage('Upload to S3') {
       steps {
