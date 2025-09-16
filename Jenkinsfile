@@ -38,16 +38,32 @@ pipeline {
   steps {
     sh '''
       set -eux
+
+      # clean output dir in Jenkins workspace
+      rm -rf frontend
       mkdir -p frontend
-      docker run --rm \
+
+      # create a container (does not start), then run it and capture logs
+      cid=$(docker create \
         -e OUTPUT_DIR=/app/frontend \
         -e ENDPOINTS_FILE=/app/checker/apis.json \
-        -v "$WORKSPACE/frontend:/app/frontend" \
-        api-checker:latest
+        api-checker:latest)
+
+      # start and attach to see logs in Jenkins
+      docker start -a "$cid"
+
+      # copy results out of the stopped container into the workspace
+      docker cp "$cid":/app/frontend/. frontend/
+
+      # cleanup
+      docker rm "$cid"
+
+      # show what we actually have for the next stages
       ls -la frontend
     '''
   }
 }
+
 
 
 
