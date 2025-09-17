@@ -1,84 +1,388 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>Local API Status</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Real-time API monitoring dashboard">
   <style>
-    :root { --muted:#6b7280; --good:#0b7b34; --bad:#a30d1a; --chip:#f3f4f6; --card:#ffffff; --line:#e5e7eb; }
-    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 24px; background:#f9fafb; color:#0f172a;}
-    h1 { margin: 0 0 4px; font-size: 22px; }
-    .sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
-    .bar { display:flex; gap:10px; align-items:center; margin-bottom: 16px; flex-wrap: wrap; }
-    .chip { background: var(--chip); border:1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 12px; }
-    .card { background: var(--card); border:1px solid var(--line); border-radius: 14px; padding: 14px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { padding: 12px; border-bottom: 1px solid var(--line); text-align: left; font-size: 14px; }
-    th { font-weight:600; color:#334155; background:#f8fafc; }
-    .ok { background:#e8f6ec; color:var(--good); padding: 4px 10px; border-radius:999px; font-weight:600; }
-    .bad { background:#fde8ea; color:var(--bad); padding: 4px 10px; border-radius:999px; font-weight:600; }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-    .right { margin-left:auto; display:flex; align-items:center; gap:10px; }
+    :root {
+      --muted: #6b7280;
+      --good: #0b7b34;
+      --bad: #a30d1a;
+      --chip: #f3f4f6;
+      --card: #ffffff;
+      --line: #e5e7eb;
+      --bg: #f9fafb;
+      --text: #0f172a;
+      --header-bg: #f8fafc;
+      --header-text: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 90vw;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: clamp(1.25rem, 4vw, 1.375rem);
+      font-weight: 600;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 0.8125rem;
+      margin-bottom: 18px;
+    }
+
+    .bar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      background: var(--chip);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 0.875rem;
+      overflow: hidden;
+    }
+
+    th:nth-child(1) { width: 15%; }
+    th:nth-child(2) { width: 35%; }
+    th:nth-child(3) { width: 12%; }
+    th:nth-child(4) { width: 10%; }
+    th:nth-child(5) { width: 18%; }
+    th:nth-child(6) { width: 10%; }
+
+    th {
+      font-weight: 600;
+      color: var(--header-text);
+      background: var(--header-bg);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      display: inline-block;
+    }
+
+    .ok {
+      background: #e8f6ec;
+      color: var(--good);
+    }
+
+    .bad {
+      background: #fde8ea;
+      color: var(--bad);
+    }
+
+    .mono {
+      font-family: ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Liberation Mono", monospace;
+    }
+
+    .right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .url-link {
+      color: #2563eb;
+      text-decoration: none;
+      word-break: break-all;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .url-link:hover {
+      text-decoration: underline;
+    }
+
+    .error-cell {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 16px;
+      }
+
+      .bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .right {
+        margin-left: 0;
+        justify-content: space-between;
+      }
+
+      th,
+      td {
+        padding: 8px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="bar">
-    <div>
-      <h1>Local API Status</h1>
-      <div class="sub">Reads <span class="mono">/data/status.json</span> from a Docker volume</div>
-    </div>
-    <div class="right">
-      <span class="chip">Last generated: <span id="generatedAt">—</span></span>
-      <span class="chip">Entries: <span id="count">0</span></span>
-    </div>
-  </div>
+  <div class="container">
+    <header class="bar">
+      <div>
+        <h1>Local API Status</h1>
+        <div class="sub">Reads <span class="mono">/data/status.json</span> from a Docker volume</div>
+      </div>
+      <div class="right">
+        <span class="chip">Last generated: <span id="generatedAt">—</span></span>
+        <span class="chip">Entries: <span id="count">0</span></span>
+      </div>
+    </header>
 
-  <div class="card">
-    <table id="table">
-      <thead>
-        <tr>
-          <th>Name</th><th>URL</th><th>Status</th><th>Latency</th><th>Checked At</th><th>Error</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <main class="card" id="mainCard">
+      <table id="table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>URL</th>
+            <th>Status</th>
+            <th>Latency</th>
+            <th>Checked At</th>
+            <th>Error</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </main>
   </div>
 
 <script>
   const STATUS_URL = "/data/status.json";
+  const REFRESH_INTERVAL = 30000;
+
+  let refreshTimer = null;
+  let isLoading = false;
+
+  const elements = {
+    generatedAt: null,
+    count: null,
+    tbody: null,
+    mainCard: null
+  };
+
+  function initializeElements() {
+    elements.generatedAt = document.getElementById('generatedAt');
+    elements.count = document.getElementById('count');
+    elements.tbody = document.querySelector('#table tbody');
+    elements.mainCard = document.getElementById('mainCard');
+  }
+
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function formatTimestamp(timestamp) {
+    if (!timestamp) return '—';
+    try {
+      return new Date(timestamp).toLocaleString();
+    } catch {
+      return timestamp;
+    }
+  }
+
+  function formatLatency(ms) {
+    if (ms == null) return '—';
+    return ms < 1000 ? `${ms} ms` : `${(ms / 1000).toFixed(1)}s`;
+  }
 
   async function fetchStatus() {
-    const res = await fetch(STATUS_URL, { cache: "no-store" });
-    if (!res.ok) return { generated_at: null, results: [] };
-    return res.json();
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const res = await fetch(STATUS_URL, {
+        cache: "no-store",
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      return {
+        generated_at: data.generated_at || null,
+        results: Array.isArray(data.results) ? data.results : []
+      };
+    } catch (error) {
+      console.warn('Failed to fetch status:', error.message);
+      return { generated_at: null, results: [] };
+    }
+  }
+
+  function createStatusElement(result) {
+    const isUp = result.ok;
+    const statusText = isUp ? `UP (${result.status || 'OK'})` : 'DOWN';
+    const className = isUp ? 'ok' : 'bad';
+
+    return `<span class="status-badge ${className}">${escapeHtml(statusText)}</span>`;
+  }
+
+  function createRow(result) {
+    const tr = document.createElement('tr');
+
+    const name = escapeHtml(result.name || 'Unknown');
+    const url = escapeHtml(result.url || '');
+    const status = createStatusElement(result);
+    const latency = formatLatency(result.latency_ms);
+    const checkedAt = formatTimestamp(result.checked_at);
+    const error = result.error ? escapeHtml(result.error) : '';
+
+    tr.innerHTML = `
+      <td title="${name}">${name}</td>
+      <td><a href="${url}" target="_blank" rel="noopener" class="url-link">${url}</a></td>
+      <td>${status}</td>
+      <td class="mono">${latency}</td>
+      <td title="${checkedAt}">${checkedAt}</td>
+      <td class="mono error-cell" title="${error}">${error}</td>
+    `;
+
+    return tr;
   }
 
   function render(data) {
-    document.getElementById('generatedAt').textContent = data.generated_at || "—";
-    document.getElementById('count').textContent = (data.results || []).length;
-    const tbody = document.querySelector("#table tbody");
-    tbody.innerHTML = "";
-    (data.results || []).forEach(r => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${r.name}</td>
-        <td><a href="${r.url}" target="_blank" rel="noopener">${r.url}</a></td>
-        <td>${r.ok ? `<span class="ok">UP (${r.status})</span>` : `<span class="bad">DOWN</span>`}</td>
-        <td class="mono">${r.latency_ms ?? "—"} ms</td>
-        <td>${r.checked_at ?? "—"}</td>
-        <td class="mono">${r.error ? r.error : ""}</td>
-      `;
-      tbody.appendChild(tr);
+    if (!elements.generatedAt) return;
+
+    const timestamp = formatTimestamp(data.generated_at);
+    elements.generatedAt.textContent = timestamp;
+    elements.generatedAt.title = timestamp;
+
+    const count = data.results.length;
+    elements.count.textContent = count;
+    elements.count.title = `${count} API${count !== 1 ? 's' : ''} monitored`;
+
+    const fragment = document.createDocumentFragment();
+    data.results.forEach(result => {
+      fragment.appendChild(createRow(result));
     });
+
+    elements.tbody.innerHTML = '';
+    elements.tbody.appendChild(fragment);
   }
 
-  async function load() { render(await fetchStatus()); }
+  function setLoadingState(loading) {
+    isLoading = loading;
+    if (elements.mainCard) {
+      elements.mainCard.classList.toggle('loading', loading);
+    }
+  }
 
-  // Initial load (no buttons, no polling)
-  load();
+  async function load() {
+    if (isLoading) return;
 
-  // If you ever want light auto-refresh without buttons, uncomment:
-  // setInterval(load, 15000); // refresh every 15s
+    setLoadingState(true);
+    try {
+      const data = await fetchStatus();
+      render(data);
+    } catch (error) {
+      console.error('Error loading data:', error);
+    } finally {
+      setLoadingState(false);
+    }
+  }
+
+  function startAutoRefresh() {
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(load, REFRESH_INTERVAL);
+  }
+
+  function handleVisibilityChange() {
+    if (document.hidden) {
+      if (refreshTimer) {
+        clearInterval(refreshTimer);
+        refreshTimer = null;
+      }
+    } else {
+      load();
+      startAutoRefresh();
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeElements();
+    load();
+    startAutoRefresh();
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    window.addEventListener('beforeunload', () => {
+      if (refreshTimer) clearInterval(refreshTimer);
+    });
+  });
 </script>
 </body>
 </html>
