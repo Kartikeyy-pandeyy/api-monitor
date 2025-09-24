@@ -80,11 +80,6 @@
     "critical": false
   },
   {
-    "name": "Bored Activity",
-    "url": "https://www.boredapi.com/api/activity",
-    "critical": false
-  },
-  {
     "name": "Agify Age Prediction",
     "url": "https://api.agify.io?name=john",
     "critical": false
@@ -170,11 +165,6 @@
     "critical": false
   },
   {
-    "name": "UK Bank Holidays",
-    "url": "https://www.gov.uk/bank-holidays.json",
-    "critical": false
-  },
-  {
     "name": "HackerNews Item",
     "url": "https://hacker-news.firebaseio.com/v0/item/8863.json",
     "critical": false
@@ -210,11 +200,6 @@
     "critical": false
   },
   {
-    "name": "Buddha Quotes",
-    "url": "https://buddha-quotes.vercel.app/api/quotes/random",
-    "critical": false
-  },
-  {
     "name": "Numbers API",
     "url": "http://numbersapi.com/42",
     "critical": false
@@ -222,16 +207,6 @@
   {
     "name": "PoetryDB",
     "url": "https://poetrydb.org/author/Shakespeare",
-    "critical": false
-  },
-  {
-    "name": "FunTranslations Yoda",
-    "url": "https://api.funtranslations.com/translate/yoda.json?text=Hello%20world",
-    "critical": false
-  },
-  {
-    "name": "Random Cat",
-    "url": "https://aws.random.cat/meow",
     "critical": false
   },
   {
