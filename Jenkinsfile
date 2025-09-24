@@ -8,7 +8,7 @@ pipeline {
     S3_BUCKET          = 'api-monitor-data-bu'
   }
 
-  triggers { cron('H/10 * * * *') }
+  triggers { cron('H/30 * * * *') }
 
   stages {
     stage('Checkout') {
