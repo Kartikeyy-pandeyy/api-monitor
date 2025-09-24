@@ -365,8 +365,50 @@
       backdrop-filter: blur(25px);
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 0.75rem;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
+      padding: 0.75rem;
+    }
+
+    /* Performance optimizations */
+    .filter-button {
+      will-change: transform, background-color;
+    }
+
+    .filter-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .count-badge {
+      transition: background-color 0.3s ease;
+      will-change: contents;
+    }
+
+    /* Full screen modal optimizations */
+    #location-test-modal .glass-morphism {
+      border-radius: 0;
+      border: none;
+    }
+
+    /* Scrollbar styling for better UX */
+    .overflow-auto::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .overflow-auto::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .overflow-auto::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+
+    .overflow-auto::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Responsive table */
+    @media (max-width: 768px) {
+      .min-w-\[600px\] { min-width: 400px; }
     }
 
     .theme-transition {
@@ -557,22 +599,29 @@
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
-          <div class="flex flex-wrap gap-2 flex-1">
-            <button class="filter-button active glass-morphism px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium flex-1 sm:flex-none" data-filter="all">
-              All <span id="count-all" class="ml-1">0</span>
+          <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 flex-1">
+            <button class="filter-button active glass-morphism px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium flex items-center justify-center" data-filter="all">
+              <span class="mr-1">All</span>
+              <span class="count-badge bg-blue-600 text-white px-1.5 py-0.5 rounded-full text-xs" data-count="all">0</span>
             </button>
-            <button class="filter-button glass-morphism px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium flex-1 sm:flex-none" data-filter="up">
-              <i class="fas fa-check-circle text-green-500 mr-1"></i><span class="hidden sm:inline">UP</span><span class="sm:hidden">✓</span> <span id="count-up" class="ml-1">0</span>
+            <button class="filter-button glass-morphism px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium flex items-center justify-center" data-filter="up">
+              <i class="fas fa-check-circle text-green-500 mr-1"></i>
+              <span class="hidden sm:inline mr-1">UP</span><span class="sm:hidden mr-1">✓</span>
+              <span class="count-badge bg-green-600 text-white px-1.5 py-0.5 rounded-full text-xs" data-count="up">0</span>
             </button>
-            <button class="filter-button glass-morphism px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium flex-1 sm:flex-none" data-filter="down">
-              <i class="fas fa-times-circle text-red-500 mr-1"></i><span class="hidden sm:inline">DOWN</span><span class="sm:hidden">✗</span> <span id="count-down" class="ml-1">0</span>
+            <button class="filter-button glass-morphism px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium flex items-center justify-center" data-filter="down">
+              <i class="fas fa-times-circle text-red-500 mr-1"></i>
+              <span class="hidden sm:inline mr-1">DOWN</span><span class="sm:hidden mr-1">✗</span>
+              <span class="count-badge bg-red-600 text-white px-1.5 py-0.5 rounded-full text-xs" data-count="down">0</span>
             </button>
-            <button class="filter-button glass-morphism px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium flex-1 sm:flex-none" data-filter="critical">
-              <i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i><span class="hidden sm:inline">Critical</span><span class="sm:hidden">!</span> <span id="count-critical" class="ml-1">0</span>
+            <button class="filter-button glass-morphism px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm font-medium flex items-center justify-center" data-filter="critical">
+              <i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i>
+              <span class="hidden sm:inline mr-1">Critical</span><span class="sm:hidden mr-1">!</span>
+              <span class="count-badge bg-yellow-600 text-white px-1.5 py-0.5 rounded-full text-xs" data-count="critical">0</span>
             </button>
           </div>
 
-          <select id="sort" class="glass-morphism rounded-lg px-3 sm:px-4 py-2 text-gray-200 focus:outline-none text-xs sm:text-sm w-full sm:w-auto">
+          <select id="sort" class="glass-morphism rounded-lg px-3 py-2 text-gray-200 focus:outline-none text-xs sm:text-sm w-full sm:w-auto">
             <option value="name">Name (A-Z)</option>
             <option value="latency-high">Latency (High to Low)</option>
             <option value="latency-low">Latency (Low to High)</option>
@@ -598,63 +647,67 @@
   </main>
 
   <!-- Test from Location Modal -->
-  <div id="location-test-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden overflow-y-auto">
-    <div class="min-h-screen p-2 sm:p-4 flex items-start justify-center py-8">
-      <div class="glass-morphism rounded-xl sm:rounded-2xl w-full max-w-7xl flex flex-col shadow-2xl">
-        <!-- Modal Header -->
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border-b border-gray-800 sticky top-0 bg-black/80 backdrop-blur-md z-20">
-          <div class="mb-4 sm:mb-0">
-            <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Test APIs from Your Location</h2>
-            <p class="text-gray-400 text-xs sm:text-sm">Compare server monitoring results with direct tests from your browser</p>
+  <div id="location-test-modal" class="fixed inset-0 bg-black bg-opacity-75 backdrop-blur-sm z-50 hidden">
+    <div class="h-full w-full flex flex-col">
+      <div class="glass-morphism h-full w-full flex flex-col shadow-2xl">
+        <!-- Modal Header - Fixed at top -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 md:p-6 border-b border-gray-700 bg-black/95 backdrop-blur-lg z-30 flex-shrink-0">
+          <div class="mb-3 sm:mb-0">
+            <h2 class="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white mb-1 sm:mb-2">Test APIs from Your Location</h2>
+            <p class="text-gray-300 text-xs sm:text-sm md:text-base">Compare server monitoring results with direct tests from your browser</p>
           </div>
-          <button id="close-modal" class="text-gray-400 hover:text-white transition-colors p-2 self-end sm:self-auto">
-            <i class="fas fa-times text-xl sm:text-2xl"></i>
+          <button id="close-modal" class="text-gray-400 hover:text-white transition-colors p-2 hover:bg-gray-800 rounded-lg self-end sm:self-auto">
+            <i class="fas fa-times text-lg sm:text-xl md:text-2xl"></i>
           </button>
         </div>
 
         <!-- Modal Content -->
-        <div class="flex flex-col p-4 sm:p-6 max-h-[80vh] sm:max-h-[75vh]">
-          <!-- Test Controls -->
-          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-            <button id="start-location-test" class="bg-purple-500 hover:bg-purple-600 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 font-medium text-sm sm:text-base w-full sm:w-auto justify-center">
-              <i class="fas fa-play"></i>
-              Start Location Test
+        <div class="flex flex-col flex-1 min-h-0">
+          <!-- Test Controls - Fixed below header -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 md:gap-4 p-3 sm:p-4 md:p-6 bg-gray-900/50 backdrop-blur-sm border-b border-gray-700 flex-shrink-0">
+            <button id="start-location-test" class="bg-purple-500 hover:bg-purple-600 text-white px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 rounded-lg transition-all duration-300 flex items-center gap-2 font-medium text-xs sm:text-sm md:text-base w-full sm:w-auto justify-center">
+              <i class="fas fa-play text-xs sm:text-sm"></i>
+              <span class="hidden xs:inline">Start Location Test</span>
+              <span class="xs:hidden">Start Test</span>
             </button>
-            <button id="stop-location-test" class="bg-red-500 hover:bg-red-600 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 font-medium text-sm sm:text-base w-full sm:w-auto justify-center hidden">
-              <i class="fas fa-stop"></i>
-              Stop Test
+            <button id="stop-location-test" class="bg-red-500 hover:bg-red-600 text-white px-3 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 rounded-lg transition-all duration-300 flex items-center gap-2 font-medium text-xs sm:text-sm md:text-base w-full sm:w-auto justify-center hidden">
+              <i class="fas fa-stop text-xs sm:text-sm"></i>
+              <span class="hidden xs:inline">Stop Test</span>
+              <span class="xs:hidden">Stop</span>
             </button>
-            <div class="text-gray-400 text-sm">
+            <div class="text-gray-300 text-xs sm:text-sm md:text-base">
               <span id="test-progress">Ready to test <span id="total-apis-count">0</span> APIs</span>
             </div>
           </div>
 
-          <!-- Results Table Container -->
-          <div class="flex-1 overflow-auto min-h-0">
-            <div class="glass-morphism rounded-lg sm:rounded-xl overflow-hidden">
+          <!-- Results Table Container - Scrollable content -->
+          <div class="flex-1 overflow-auto min-h-0 p-3 sm:p-4 md:p-6">
+            <div class="glass-morphism rounded-lg overflow-hidden">
               <!-- Mobile Card View -->
-              <div class="block sm:hidden" id="mobile-results">
-                <div id="mobile-test-results">
+              <div class="block md:hidden" id="mobile-results">
+                <div id="mobile-test-results" class="space-y-3">
                   <!-- Mobile cards will be populated here -->
                 </div>
               </div>
 
-              <!-- Desktop Table View -->
-              <div class="hidden sm:block">
-                <table class="w-full text-sm">
-                  <thead class="bg-gray-900 sticky top-0 z-10">
-                    <tr>
-                      <th class="px-3 sm:px-4 py-3 text-left font-semibold text-gray-200">API Name</th>
-                      <th class="px-3 sm:px-4 py-3 text-left font-semibold text-gray-200">Server Result</th>
-                      <th class="px-3 sm:px-4 py-3 text-left font-semibold text-gray-200">Your Location Result</th>
-                      <th class="px-3 sm:px-4 py-3 text-left font-semibold text-gray-200 hidden lg:table-cell">Test Method</th>
-                      <th class="px-3 sm:px-4 py-3 text-left font-semibold text-gray-200 hidden xl:table-cell">Latency Diff</th>
-                    </tr>
-                  </thead>
-                  <tbody id="location-test-results">
-                    <!-- Results will be populated here -->
-                  </tbody>
-                </table>
+              <!-- Tablet/Desktop Table View -->
+              <div class="hidden md:block">
+                <div class="overflow-x-auto">
+                  <table class="w-full text-xs sm:text-sm lg:text-base min-w-[600px]">
+                    <thead class="bg-gray-900 sticky top-0 z-10">
+                      <tr>
+                        <th class="px-2 sm:px-3 lg:px-4 py-2 sm:py-3 text-left font-semibold text-gray-200 w-1/5">API Name</th>
+                        <th class="px-2 sm:px-3 lg:px-4 py-2 sm:py-3 text-left font-semibold text-gray-200 w-1/5">Server Result</th>
+                        <th class="px-2 sm:px-3 lg:px-4 py-2 sm:py-3 text-left font-semibold text-gray-200 w-1/5">Your Location Result</th>
+                        <th class="px-2 sm:px-3 lg:px-4 py-2 sm:py-3 text-left font-semibold text-gray-200 w-1/5 hidden lg:table-cell">Test Method</th>
+                        <th class="px-2 sm:px-3 lg:px-4 py-2 sm:py-3 text-left font-semibold text-gray-200 w-1/5 hidden xl:table-cell">Latency Diff</th>
+                      </tr>
+                    </thead>
+                    <tbody id="location-test-results">
+                      <!-- Results will be populated here -->
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -844,7 +897,10 @@
       startAutoRefresh() {
         this.stopAutoRefresh();
         this.refreshInterval = setInterval(() => {
-          this.loadStatus();
+          // Only refresh if page is visible
+          if (!document.hidden) {
+            this.loadStatus();
+          }
         }, 5000);
       }
 
@@ -873,16 +929,6 @@
         }, 3000);
       }
 
-      toggleTheme() {
-        document.documentElement.classList.toggle('dark');
-        document.body.classList.toggle('dark');
-        const icon = document.getElementById('theme-toggle').querySelector('i');
-        icon.classList.toggle('fa-moon');
-        icon.classList.toggle('fa-sun');
-
-        // Save theme preference
-        localStorage.setItem('darkMode', document.body.classList.contains('dark'));
-      }
 
       async loadStatus(showNotification = false) {
         const refreshBtn = document.getElementById('refresh-btn');
@@ -970,11 +1016,11 @@
         document.getElementById('avg-latency').textContent = avgLatency + 'ms';
         document.getElementById('uptime-percent').textContent = uptime + '%';
 
-        // Update filter counts
-        document.getElementById('count-all').textContent = this.apis.length;
-        document.getElementById('count-up').textContent = upCount;
-        document.getElementById('count-down').textContent = downCount;
-        document.getElementById('count-critical').textContent = criticalCount;
+        // Update filter counts using data attributes
+        const counts = { all: this.apis.length, up: upCount, down: downCount, critical: criticalCount };
+        document.querySelectorAll('[data-count]').forEach(el => {
+          el.textContent = counts[el.dataset.count] || '0';
+        });
       }
 
       updateTimestamp() {
@@ -1236,28 +1282,28 @@
 
           // Desktop table row
           const row = document.createElement('tr');
-          row.className = 'border-b border-gray-800';
+          row.className = 'border-b border-gray-800 hover:bg-gray-900/30 transition-colors';
           row.innerHTML = `
-            <td class="px-3 sm:px-4 py-3">
-              <div class="font-medium text-white text-sm">${api.name}</div>
-              <div class="text-xs text-gray-400 truncate max-w-[200px]">${api.url}</div>
+            <td class="px-2 sm:px-3 lg:px-4 py-3">
+              <div class="font-medium text-white text-xs sm:text-sm lg:text-base">${api.name}</div>
+              <div class="text-xs text-gray-400 truncate max-w-[120px] sm:max-w-[150px] lg:max-w-[200px]">${api.url}</div>
             </td>
-            <td class="px-3 sm:px-4 py-3">
-              <div class="flex items-center gap-2">
-                <span class="status-badge px-2 py-1 rounded-full text-xs font-bold ${api.status === 'UP' ? 'bg-green-500' : 'bg-red-500'} text-white">
+            <td class="px-2 sm:px-3 lg:px-4 py-3">
+              <div class="flex items-center gap-1 sm:gap-2">
+                <span class="status-badge px-1.5 sm:px-2 py-1 rounded-full text-xs font-bold ${api.status === 'UP' ? 'bg-green-500' : 'bg-red-500'} text-white">
                   ${api.status}
                 </span>
-                <span class="text-sm text-gray-300">${api.latency ? api.latency + 'ms' : '--'}</span>
+                <span class="text-xs sm:text-sm text-gray-300">${api.latency ? api.latency + 'ms' : '--'}</span>
               </div>
             </td>
-            <td class="px-3 sm:px-4 py-3" id="user-result-${safeId}">
-              <span class="text-gray-400 text-sm">Not tested</span>
+            <td class="px-2 sm:px-3 lg:px-4 py-3" id="user-result-${safeId}">
+              <span class="text-gray-400 text-xs sm:text-sm">Not tested</span>
             </td>
-            <td class="px-3 sm:px-4 py-3 hidden lg:table-cell" id="test-method-${safeId}">
-              <span class="text-gray-400 text-sm">--</span>
+            <td class="px-2 sm:px-3 lg:px-4 py-3 hidden lg:table-cell" id="test-method-${safeId}">
+              <span class="text-gray-400 text-xs sm:text-sm">--</span>
             </td>
-            <td class="px-3 sm:px-4 py-3 hidden xl:table-cell" id="latency-diff-${safeId}">
-              <span class="text-gray-400 text-sm">--</span>
+            <td class="px-2 sm:px-3 lg:px-4 py-3 hidden xl:table-cell" id="latency-diff-${safeId}">
+              <span class="text-gray-400 text-xs sm:text-sm">--</span>
             </td>
           `;
           tbody.appendChild(row);
@@ -1268,40 +1314,44 @@
           mobileCard.innerHTML = `
             <div class="flex justify-between items-start mb-3">
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-white text-sm mb-1">${api.name}</h3>
-                <p class="text-xs text-gray-400 truncate">${api.url}</p>
+                <h3 class="font-medium text-white text-sm sm:text-base mb-1">${api.name}</h3>
+                <p class="text-xs sm:text-sm text-gray-400 truncate">${api.url}</p>
               </div>
             </div>
 
-            <div class="grid grid-cols-2 gap-3 text-xs">
-              <div>
-                <span class="text-gray-500">Server:</span>
-                <div class="flex items-center gap-1 mt-1">
-                  <span class="status-badge px-2 py-1 rounded-full text-xs font-bold ${api.status === 'UP' ? 'bg-green-500' : 'bg-red-500'} text-white">
-                    ${api.status}
-                  </span>
-                  <span class="text-gray-300">${api.latency ? api.latency + 'ms' : '--'}</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+              <div class="space-y-2">
+                <div>
+                  <span class="text-gray-500 font-medium">Server:</span>
+                  <div class="flex items-center gap-1 mt-1">
+                    <span class="status-badge px-2 py-1 rounded-full text-xs font-bold ${api.status === 'UP' ? 'bg-green-500' : 'bg-red-500'} text-white">
+                      ${api.status}
+                    </span>
+                    <span class="text-gray-300">${api.latency ? api.latency + 'ms' : '--'}</span>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="text-gray-500 font-medium">Your Location:</span>
+                  <div class="mt-1" id="mobile-user-result-${safeId}">
+                    <span class="text-gray-400">Not tested</span>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <span class="text-gray-500">Your Location:</span>
-                <div class="mt-1" id="mobile-user-result-${safeId}">
-                  <span class="text-gray-400">Not tested</span>
+              <div class="space-y-2">
+                <div>
+                  <span class="text-gray-500 font-medium">Method:</span>
+                  <div class="mt-1" id="mobile-test-method-${safeId}">
+                    <span class="text-gray-400">--</span>
+                  </div>
                 </div>
-              </div>
 
-              <div class="col-span-2">
-                <span class="text-gray-500">Method:</span>
-                <div class="mt-1" id="mobile-test-method-${safeId}">
-                  <span class="text-gray-400">--</span>
-                </div>
-              </div>
-
-              <div class="col-span-2" id="mobile-latency-diff-${safeId}">
-                <span class="text-gray-500">Latency Diff:</span>
-                <div class="mt-1">
-                  <span class="text-gray-400">--</span>
+                <div id="mobile-latency-diff-${safeId}">
+                  <span class="text-gray-500 font-medium">Latency Diff:</span>
+                  <div class="mt-1">
+                    <span class="text-gray-400">--</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1319,8 +1369,8 @@
         startBtn.classList.add('hidden');
         stopBtn.classList.remove('hidden');
 
-        // Lambda proxy URL
-        this.lambdaProxyUrl = 'https://xmh6bgaebsc32tswfykmupfpym0lszib.lambda-url.us-east-1.on.aws/';
+        // Lambda proxy URL (Mumbai region for Indian users)
+        this.lambdaProxyUrl = 'https://gbyqtlkyraiyuz4w6iwsvckvmm0ocakj.lambda-url.ap-south-1.on.aws/';
 
         let completed = 0;
 
@@ -1536,16 +1586,6 @@
 
     // Initialize the app
     document.addEventListener('DOMContentLoaded', () => {
-      // Apply saved theme
-      const darkMode = localStorage.getItem('darkMode') === 'true';
-      if (darkMode) {
-        document.documentElement.classList.add('dark');
-        document.body.classList.add('dark');
-        const icon = document.getElementById('theme-toggle').querySelector('i');
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
-      }
-
       window.apiMonitor = new APIMonitor();
     });
   </script>
