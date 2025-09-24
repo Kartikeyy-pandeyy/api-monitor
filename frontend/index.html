@@ -831,763 +831,771 @@
   </template>
 
   <script>
-    class APIMonitor {
-      constructor() {
-        this.apis = [];
-        this.history = [];
-        this.currentFilter = 'all';
-        this.currentSort = 'name';
-        this.searchTerm = '';
-        this.refreshInterval = null;
+  class APIMonitor {
+    constructor() {
+      this.apis = [];
+      this.history = [];
+      this.currentFilter = 'all';
+      this.currentSort = 'name';
+      this.searchTerm = '';
+      this.refreshInterval = null;
+      this.debounceTimer = null;
 
-        this.init();
-      }
+      this.init();
+    }
 
-      init() {
-        this.bindEvents();
-        this.loadStatus();
-        this.startAutoRefresh();
-        this.updateScrollIndicator();
-      }
+    init() {
+      this.bindEvents();
+      this.loadStatus();
+      this.startAutoRefresh();
+      this.updateScrollIndicator();
+    }
 
-      bindEvents() {
-        // Refresh button
-        document.getElementById('refresh-btn').addEventListener('click', () => this.loadStatus(true));
+    bindEvents() {
+      // Refresh button
+      document.getElementById('refresh-btn').addEventListener('click', () => this.loadStatus(true));
 
-        // Filter buttons
-        document.querySelectorAll('.filter-button').forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.filter-button').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            this.currentFilter = e.target.dataset.filter;
-            this.renderAPIs();
-          });
-        });
-
-        // Sort dropdown
-        document.getElementById('sort').addEventListener('change', (e) => {
-          this.currentSort = e.target.value;
+      // Filter buttons
+      document.querySelectorAll('.filter-button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const clickedBtn = e.currentTarget; // Fix: Use currentTarget to always get the button
+          document.querySelectorAll('.filter-button').forEach(b => b.classList.remove('active'));
+          clickedBtn.classList.add('active');
+          this.currentFilter = clickedBtn.dataset.filter;
           this.renderAPIs();
         });
+      });
 
-        // Search input
-        document.getElementById('search-input').addEventListener('input', (e) => {
+      // Sort dropdown
+      document.getElementById('sort').addEventListener('change', (e) => {
+        this.currentSort = e.target.value;
+        this.renderAPIs();
+      });
+
+      // Search input with debounce
+      document.getElementById('search-input').addEventListener('input', (e) => {
+        clearTimeout(this.debounceTimer);
+        this.debounceTimer = setTimeout(() => {
           this.searchTerm = e.target.value.toLowerCase();
           this.renderAPIs();
-        });
+        }, 300); // 300ms debounce
+      });
 
+      // Scroll indicator
+      window.addEventListener('scroll', this.updateScrollIndicator);
 
-        // Scroll indicator
-        window.addEventListener('scroll', this.updateScrollIndicator);
+      // Test from location modal
+      document.getElementById('test-from-location-btn').addEventListener('click', () => this.openLocationTestModal());
+      document.getElementById('close-modal').addEventListener('click', () => this.closeLocationTestModal());
+      document.getElementById('start-location-test').addEventListener('click', () => this.startLocationTest());
+      document.getElementById('stop-location-test').addEventListener('click', () => this.stopLocationTest());
 
-        // Test from location modal
-        document.getElementById('test-from-location-btn').addEventListener('click', () => this.openLocationTestModal());
-        document.getElementById('close-modal').addEventListener('click', () => this.closeLocationTestModal());
-        document.getElementById('start-location-test').addEventListener('click', () => this.startLocationTest());
-        document.getElementById('stop-location-test').addEventListener('click', () => this.stopLocationTest());
-
-        // Close modal on backdrop click
-        document.getElementById('location-test-modal').addEventListener('click', (e) => {
-          if (e.target.id === 'location-test-modal') {
-            this.closeLocationTestModal();
-          }
-        });
-      }
-
-      startAutoRefresh() {
-        this.stopAutoRefresh();
-        this.refreshInterval = setInterval(() => {
-          // Only refresh if page is visible
-          if (!document.hidden) {
-            this.loadStatus();
-          }
-        }, 5000);
-      }
-
-      stopAutoRefresh() {
-        if (this.refreshInterval) {
-          clearInterval(this.refreshInterval);
-          this.refreshInterval = null;
+      // Close modal on backdrop click
+      document.getElementById('location-test-modal').addEventListener('click', (e) => {
+        if (e.target.id === 'location-test-modal') {
+          this.closeLocationTestModal();
         }
-      }
+      });
+    }
 
-      updateScrollIndicator() {
-        const scrollTop = window.pageYOffset;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = (scrollTop / docHeight) * 100;
-        document.getElementById('scrollIndicator').style.width = scrollPercent + '%';
-      }
-
-      showNotification(message, type = 'success') {
-        const notification = document.getElementById('notification');
-        notification.textContent = message;
-        notification.className = `notification ${type}`;
-        notification.classList.add('show');
-
-        setTimeout(() => {
-          notification.classList.remove('show');
-        }, 3000);
-      }
-
-
-      async loadStatus(showNotification = false) {
-        const refreshBtn = document.getElementById('refresh-btn');
-        const icon = refreshBtn.querySelector('i');
-        icon.style.animation = 'spin 1s linear infinite';
-
-        if (showNotification) {
-          this.showLoadingState();
+    startAutoRefresh() {
+      this.stopAutoRefresh();
+      this.refreshInterval = setInterval(() => {
+        // Only refresh if page is visible
+        if (!document.hidden) {
+          this.loadStatus();
         }
-
-        try {
-          const [statusRes, historyRes] = await Promise.all([
-            fetch('https://api-monitor-data-bu.s3.us-east-1.amazonaws.com/frontend/status.json'),
-            fetch('https://api-monitor-data-bu.s3.us-east-1.amazonaws.com/frontend/history.json')
-          ]);
-
-          if (!statusRes.ok) throw new Error('Failed to fetch status');
-
-          this.apis = await statusRes.json();
-          this.history = historyRes.ok ? await historyRes.json() : [];
-
-          this.renderAPIs();
-          this.updateStats();
-          this.updateTimestamp();
-
-          if (showNotification) {
-            this.showNotification('Data refreshed successfully!', 'success');
-          }
-
-        } catch (error) {
-          console.error('Error loading status:', error);
-          if (showNotification) {
-            this.showError();
-          }
-          this.showNotification('Failed to load data', 'error');
-        } finally {
-          icon.style.animation = '';
-        }
-      }
-
-      showLoadingState() {
-        const container = document.getElementById('dashboard');
-        container.innerHTML = '';
-
-        for (let i = 0; i < 6; i++) {
-          const loadingCard = document.getElementById('loading-template').content.cloneNode(true);
-          container.appendChild(loadingCard);
-        }
-      }
-
-      showError() {
-        const container = document.getElementById('dashboard');
-        container.innerHTML = `
-          <div class="col-span-full glass-morphism rounded-2xl p-12 text-center">
-            <div class="mb-6">
-              <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
-              <h2 class="text-2xl font-bold text-gray-200 mb-2">Data Not Available</h2>
-              <p class="text-gray-400">Unable to load API status. Please try again later.</p>
-            </div>
-            <button onclick="window.apiMonitor.loadStatus()" class="glass-morphism hover:bg-blue-500 text-blue-600 hover:text-white px-6 py-3 rounded-xl transition-all duration-300">
-              <i class="fas fa-retry mr-2"></i>Retry
-            </button>
-          </div>
-        `;
-      }
-
-      updateStats() {
-        const upCount = this.apis.filter(api => api.status === 'UP').length;
-        const downCount = this.apis.filter(api => api.status === 'DOWN').length;
-        const criticalCount = this.apis.filter(api => api.critical).length;
-
-        // Calculate average latency only from valid positive values
-        const validLatencies = this.apis
-          .map(api => api.latency && api.latency > 0 ? Math.max(0, api.latency) : 0)
-          .filter(latency => latency > 0);
-
-        const avgLatency = validLatencies.length
-          ? Math.round(validLatencies.reduce((sum, latency) => sum + latency, 0) / validLatencies.length)
-          : 0;
-
-        const uptime = this.apis.length ? Math.round((upCount / this.apis.length) * 100) : 0;
-
-        document.getElementById('total-up').textContent = upCount;
-        document.getElementById('total-down').textContent = downCount;
-        document.getElementById('avg-latency').textContent = avgLatency + 'ms';
-        document.getElementById('uptime-percent').textContent = uptime + '%';
-
-        // Update filter counts using data attributes
-        const counts = { all: this.apis.length, up: upCount, down: downCount, critical: criticalCount };
-        document.querySelectorAll('[data-count]').forEach(el => {
-          el.textContent = counts[el.dataset.count] || '0';
-        });
-      }
-
-      updateTimestamp() {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString();
-        document.getElementById('last-updated').innerHTML = `
-          <i class="fas fa-clock mr-2"></i>
-          Last updated: ${timeString}
-        `;
-        document.getElementById('footer-time').textContent = timeString;
-      }
-
-      filterAPIs() {
-        return this.apis.filter(api => {
-          // Filter by category
-          let matchesFilter = true;
-          if (this.currentFilter === 'up') matchesFilter = api.status === 'UP';
-          else if (this.currentFilter === 'down') matchesFilter = api.status === 'DOWN';
-          else if (this.currentFilter === 'critical') matchesFilter = api.critical;
-
-          // Filter by search term
-          const matchesSearch = this.searchTerm === '' ||
-            api.name.toLowerCase().includes(this.searchTerm) ||
-            api.url.toLowerCase().includes(this.searchTerm);
-
-          return matchesFilter && matchesSearch;
-        });
-      }
-
-      sortAPIs(apis) {
-        return apis.sort((a, b) => {
-          switch (this.currentSort) {
-            case 'name':
-              return a.name.localeCompare(b.name);
-            case 'latency-high':
-              const aLatencyHigh = Math.max(0, a.latency || 0);
-              const bLatencyHigh = Math.max(0, b.latency || 0);
-              return bLatencyHigh - aLatencyHigh;
-            case 'latency-low':
-              const aLatencyLow = Math.max(0, a.latency || 0);
-              const bLatencyLow = Math.max(0, b.latency || 0);
-              return aLatencyLow - bLatencyLow;
-            default:
-              return 0;
-          }
-        });
-      }
-
-      calculateUptime(apiName) {
-        const apiHistory = this.history.filter(item => item.name === apiName).slice(-24);
-        if (apiHistory.length === 0) return 0;
-        const upCount = apiHistory.filter(item => item.status === 'UP').length;
-        return Math.round((upCount / apiHistory.length) * 100);
-      }
-
-      getLatencyCategory(latency) {
-        // Ensure latency is positive and valid
-        const validLatency = latency && latency > 0 ? Math.max(0, latency) : null;
-
-        if (!validLatency) return { category: 'Unknown', class: 'status-warning', color: '#6b7280' };
-        if (validLatency <= 300) return { category: 'Excellent', class: 'status-up', color: '#10b981' };
-        if (validLatency <= 1000) return { category: 'Good', class: 'status-warning', color: '#f59e0b' };
-        return { category: 'Slow', class: 'status-down', color: '#ef4444' };
-      }
-
-      renderAPIs() {
-        const container = document.getElementById('dashboard');
-        const filteredAPIs = this.filterAPIs();
-        const sortedAPIs = this.sortAPIs(filteredAPIs);
-
-        container.innerHTML = '';
-
-        if (sortedAPIs.length === 0) {
-          container.innerHTML = `
-            <div class="col-span-full glass-morphism rounded-2xl p-12 text-center">
-              <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
-              <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-300">No APIs Found</h3>
-              <p class="text-gray-500 dark:text-gray-400">Try adjusting your search or filter criteria.</p>
-            </div>
-          `;
-          return;
-        }
-
-        sortedAPIs.forEach(api => this.createAPICard(api, container));
-      }
-
-      createAPICard(api, container) {
-        const card = document.getElementById('api-card-template').content.cloneNode(true);
-        const latencyInfo = this.getLatencyCategory(api.latency);
-        const uptime = this.calculateUptime(api.name);
-
-        // Basic info
-        card.querySelector('h3').textContent = api.name;
-        card.querySelector('.api-url').textContent = api.url;
-
-        // Status indicator and badge
-        const statusIndicator = card.querySelector('.status-indicator');
-        const statusBadge = card.querySelector('.status-badge');
-
-        if (api.status === 'UP') {
-          statusIndicator.className = 'status-indicator status-up';
-          statusBadge.className = 'status-badge px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white';
-          statusBadge.textContent = latencyInfo.category;
-        } else {
-          statusIndicator.className = 'status-indicator status-down';
-          statusBadge.className = 'status-badge px-3 py-1 rounded-full text-xs font-bold bg-red-500 text-white';
-          statusBadge.textContent = 'DOWN';
-        }
-
-        // Critical tag
-        if (api.critical) {
-          card.querySelector('.critical-tag').classList.remove('hidden');
-          card.querySelector('.api-card').classList.add('critical-glow');
-        }
-
-        // Details
-        card.querySelector('.status-text').textContent = api.status;
-        card.querySelector('.code-text').textContent = api.code || '--';
-        const displayLatency = api.latency && api.latency > 0 ? Math.max(0, api.latency) : null;
-        card.querySelector('.latency-text').textContent = displayLatency ? `${displayLatency}ms` : '--';
-        card.querySelector('.time-text').textContent = new Date(api.timestamp).toLocaleTimeString();
-
-        // Latency bar
-        const latencyProgress = card.querySelector('.latency-progress');
-        if (displayLatency) {
-          const percentage = Math.min(100, (displayLatency / 2000) * 100);
-          latencyProgress.style.width = `${percentage}%`;
-          latencyProgress.style.background = `linear-gradient(90deg, ${latencyInfo.color}, ${latencyInfo.color}dd)`;
-        }
-
-        card.querySelector('.latency-category').textContent = latencyInfo.category;
-
-        // Uptime chart
-        this.renderUptimeChart(card, api.name);
-        card.querySelector('.uptime-percentage').textContent = `${uptime}%`;
-
-        // History
-        this.renderHistory(card, api.name);
-
-        // Toggle history
-        const toggleBtn = card.querySelector('.toggle-history');
-        const historyContainer = card.querySelector('.history-container');
-
-        toggleBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-
-          // Close other history panels
-          document.querySelectorAll('.history-container').forEach(container => {
-            if (container !== historyContainer) {
-              container.classList.add('hidden');
-              const otherToggle = container.closest('.api-card').querySelector('.toggle-history');
-              otherToggle.innerHTML = '<i class="fas fa-chevron-down"></i><span>Show History</span>';
-            }
-          });
-
-          // Toggle current panel
-          const isHidden = historyContainer.classList.contains('hidden');
-          historyContainer.classList.toggle('hidden');
-          toggleBtn.innerHTML = isHidden
-            ? '<i class="fas fa-chevron-up"></i><span>Hide History</span>'
-            : '<i class="fas fa-chevron-down"></i><span>Show History</span>';
-        });
-
-        container.appendChild(card);
-      }
-
-      renderUptimeChart(card, apiName) {
-        const chartContainer = card.querySelector('.uptime-chart');
-        const apiHistory = this.history.filter(item => item.name === apiName).slice(-24);
-
-        chartContainer.innerHTML = '';
-
-        if (apiHistory.length === 0) {
-          chartContainer.innerHTML = '<div class="text-xs text-gray-500 text-center">No data</div>';
-          return;
-        }
-
-        apiHistory.forEach(item => {
-          const bar = document.createElement('div');
-          bar.className = 'uptime-bar';
-
-          if (item.status === 'UP') {
-            if (item.latency > 1000) bar.classList.add('moderate');
-            else bar.classList.add('up');
-          } else {
-            bar.classList.add('down');
-          }
-
-          bar.title = `${new Date(item.timestamp).toLocaleTimeString()}: ${item.status} (${item.latency || '--'}ms)`;
-          chartContainer.appendChild(bar);
-        });
-      }
-
-      renderHistory(card, apiName) {
-        const historyContainer = card.querySelector('.history-timeline');
-        const apiHistory = this.history.filter(item => item.name === apiName).slice(-10);
-
-        historyContainer.innerHTML = '';
-
-        apiHistory.reverse().forEach(item => {
-          const historyItem = document.createElement('div');
-          let statusClass = item.status.toLowerCase();
-
-          if (item.status === 'UP' && item.latency > 1000) {
-            statusClass = 'moderate';
-          }
-
-          historyItem.className = `history-item ${statusClass}`;
-          historyItem.innerHTML = `
-            <div class="flex justify-between items-center mb-1">
-              <span class="text-xs font-medium">${new Date(item.timestamp).toLocaleTimeString()}</span>
-              <span class="text-xs px-2 py-1 rounded-full ${item.status === 'UP' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${item.status}</span>
-            </div>
-            <div class="flex justify-between text-xs text-gray-400">
-              <span>${item.latency ? item.latency + 'ms' : '--'}</span>
-              <span>HTTP ${item.code || '--'}</span>
-            </div>
-          `;
-
-          historyContainer.appendChild(historyItem);
-        });
-      }
-
-      // Location Testing Methods
-      openLocationTestModal() {
-        const modal = document.getElementById('location-test-modal');
-        modal.classList.remove('hidden');
-
-        // Store original body overflow and prevent background scrolling
-        this.originalBodyOverflow = document.body.style.overflow;
-        document.body.style.overflow = 'hidden';
-
-        // Update API count
-        document.getElementById('total-apis-count').textContent = this.apis.length;
-
-        // Initialize results table
-        this.initializeLocationTestTable();
-      }
-
-      closeLocationTestModal() {
-        const modal = document.getElementById('location-test-modal');
-        modal.classList.add('hidden');
-
-        // Restore original body overflow
-        document.body.style.overflow = this.originalBodyOverflow || 'auto';
-
-        // Stop any running tests
-        this.stopLocationTest();
-      }
-
-      initializeLocationTestTable() {
-        const tbody = document.getElementById('location-test-results');
-        const mobileResults = document.getElementById('mobile-test-results');
-        tbody.innerHTML = '';
-        mobileResults.innerHTML = '';
-
-        this.apis.forEach(api => {
-          const safeId = api.name.replace(/[^a-zA-Z0-9]/g, '');
-
-          // Desktop table row
-          const row = document.createElement('tr');
-          row.className = 'border-b border-gray-800 hover:bg-gray-900/30 transition-colors';
-          row.innerHTML = `
-            <td class="px-2 sm:px-3 lg:px-4 py-3">
-              <div class="font-medium text-white text-xs sm:text-sm lg:text-base">${api.name}</div>
-              <div class="text-xs text-gray-400 truncate max-w-[120px] sm:max-w-[150px] lg:max-w-[200px]">${api.url}</div>
-            </td>
-            <td class="px-2 sm:px-3 lg:px-4 py-3">
-              <div class="flex items-center gap-1 sm:gap-2">
-                <span class="status-badge px-1.5 sm:px-2 py-1 rounded-full text-xs font-bold ${api.status === 'UP' ? 'bg-green-500' : 'bg-red-500'} text-white">
-                  ${api.status}
-                </span>
-                <span class="text-xs sm:text-sm text-gray-300">${api.latency ? api.latency + 'ms' : '--'}</span>
-              </div>
-            </td>
-            <td class="px-2 sm:px-3 lg:px-4 py-3" id="user-result-${safeId}">
-              <span class="text-gray-400 text-xs sm:text-sm">Not tested</span>
-            </td>
-            <td class="px-2 sm:px-3 lg:px-4 py-3 hidden lg:table-cell" id="test-method-${safeId}">
-              <span class="text-gray-400 text-xs sm:text-sm">--</span>
-            </td>
-            <td class="px-2 sm:px-3 lg:px-4 py-3 hidden xl:table-cell" id="latency-diff-${safeId}">
-              <span class="text-gray-400 text-xs sm:text-sm">--</span>
-            </td>
-          `;
-          tbody.appendChild(row);
-
-          // Mobile card
-          const mobileCard = document.createElement('div');
-          mobileCard.className = 'mobile-card';
-          mobileCard.innerHTML = `
-            <div class="flex justify-between items-start mb-3">
-              <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-white text-sm sm:text-base mb-1">${api.name}</h3>
-                <p class="text-xs sm:text-sm text-gray-400 truncate">${api.url}</p>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
-              <div class="space-y-2">
-                <div>
-                  <span class="text-gray-500 font-medium">Server:</span>
-                  <div class="flex items-center gap-1 mt-1">
-                    <span class="status-badge px-2 py-1 rounded-full text-xs font-bold ${api.status === 'UP' ? 'bg-green-500' : 'bg-red-500'} text-white">
-                      ${api.status}
-                    </span>
-                    <span class="text-gray-300">${api.latency ? api.latency + 'ms' : '--'}</span>
-                  </div>
-                </div>
-
-                <div>
-                  <span class="text-gray-500 font-medium">Your Location:</span>
-                  <div class="mt-1" id="mobile-user-result-${safeId}">
-                    <span class="text-gray-400">Not tested</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="space-y-2">
-                <div>
-                  <span class="text-gray-500 font-medium">Method:</span>
-                  <div class="mt-1" id="mobile-test-method-${safeId}">
-                    <span class="text-gray-400">--</span>
-                  </div>
-                </div>
-
-                <div id="mobile-latency-diff-${safeId}">
-                  <span class="text-gray-500 font-medium">Latency Diff:</span>
-                  <div class="mt-1">
-                    <span class="text-gray-400">--</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
-          mobileResults.appendChild(mobileCard);
-        });
-      }
-
-      async startLocationTest() {
-        this.isLocationTesting = true;
-        const startBtn = document.getElementById('start-location-test');
-        const stopBtn = document.getElementById('stop-location-test');
-        const progressSpan = document.getElementById('test-progress');
-
-        startBtn.classList.add('hidden');
-        stopBtn.classList.remove('hidden');
-
-        // Lambda proxy URL (Mumbai region for Indian users)
-        this.lambdaProxyUrl = 'https://gbyqtlkyraiyuz4w6iwsvckvmm0ocakj.lambda-url.ap-south-1.on.aws/';
-
-        let completed = 0;
-
-        for (const api of this.apis) {
-          if (!this.isLocationTesting) break;
-
-          completed++;
-          progressSpan.textContent = `Testing ${completed} of ${this.apis.length} APIs...`;
-
-          const safeId = api.name.replace(/[^a-zA-Z0-9]/g, '');
-          const userResultCell = document.getElementById(`user-result-${safeId}`);
-          const testMethodCell = document.getElementById(`test-method-${safeId}`);
-          const latencyDiffCell = document.getElementById(`latency-diff-${safeId}`);
-
-          // Show testing indicator
-          userResultCell.innerHTML = '<span class="text-blue-400 text-sm"><i class="fas fa-spinner fa-spin mr-1"></i>Testing...</span>';
-
-          try {
-            const result = await this.testApiFromLocation(api);
-            this.updateLocationTestResult(safeId, api, result);
-          } catch (error) {
-            console.error(`Error testing ${api.name}:`, error);
-            userResultCell.innerHTML = '<span class="text-red-400 text-sm">Test failed</span>';
-            testMethodCell.innerHTML = '<span class="text-gray-400 text-sm">Error</span>';
-          }
-
-          // Small delay between tests to avoid overwhelming
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-
-        if (this.isLocationTesting) {
-          progressSpan.textContent = `Completed testing ${this.apis.length} APIs`;
-        }
-
-        this.stopLocationTest();
-      }
-
-      stopLocationTest() {
-        this.isLocationTesting = false;
-        const startBtn = document.getElementById('start-location-test');
-        const stopBtn = document.getElementById('stop-location-test');
-
-        startBtn.classList.remove('hidden');
-        stopBtn.classList.add('hidden');
-      }
-
-      async testApiFromLocation(api) {
-        const startTime = performance.now();
-
-        try {
-          // First attempt: Direct browser request
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-          const response = await fetch(api.url, {
-            method: 'GET',
-            mode: 'cors',
-            cache: 'no-store',
-            signal: controller.signal,
-            headers: {
-              'Accept': 'application/json, text/plain, */*'
-            }
-          });
-
-          clearTimeout(timeoutId);
-          const endTime = performance.now();
-          const latency = Math.round(endTime - startTime);
-
-          return {
-            success: true,
-            status: response.status,
-            latency,
-            method: 'Direct from your browser',
-            error: null
-          };
-
-        } catch (error) {
-          // If direct request fails (likely CORS), try Lambda proxy
-          if (error.name === 'TypeError' || error.message.includes('CORS') || error.message.includes('fetch')) {
-            return await this.testApiViaProxy(api, startTime);
-          }
-
-          const endTime = performance.now();
-          const latency = Math.round(endTime - startTime);
-
-          return {
-            success: false,
-            status: null,
-            latency,
-            method: 'Direct from your browser',
-            error: error.message
-          };
-        }
-      }
-
-      async testApiViaProxy(api, originalStartTime) {
-        try {
-          const proxyStartTime = performance.now();
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-          const response = await fetch(this.lambdaProxyUrl, {
-            method: 'POST',
-            mode: 'cors',
-            cache: 'no-store',
-            signal: controller.signal,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-              url: api.url,
-              method: 'GET',
-              timeout: 10
-            })
-          });
-
-          clearTimeout(timeoutId);
-          const endTime = performance.now();
-          const totalLatency = Math.round(endTime - originalStartTime);
-
-          if (!response.ok) {
-            throw new Error(`Proxy error: ${response.status}`);
-          }
-
-          const result = await response.json();
-
-          return {
-            success: result.success,
-            status: result.status_code,
-            latency: result.latency_ms, // Use the Lambda's measured latency
-            method: 'Via CORS proxy (Lambda)',
-            error: result.error
-          };
-
-        } catch (error) {
-          const endTime = performance.now();
-          const latency = Math.round(endTime - originalStartTime);
-
-          return {
-            success: false,
-            status: null,
-            latency,
-            method: 'CORS blocked entirely',
-            error: error.message
-          };
-        }
-      }
-
-      updateLocationTestResult(safeId, api, result) {
-        // Update desktop table
-        const userResultCell = document.getElementById(`user-result-${safeId}`);
-        const testMethodCell = document.getElementById(`test-method-${safeId}`);
-        const latencyDiffCell = document.getElementById(`latency-diff-${safeId}`);
-
-        // Update mobile cards
-        const mobileUserResult = document.getElementById(`mobile-user-result-${safeId}`);
-        const mobileTestMethod = document.getElementById(`mobile-test-method-${safeId}`);
-        const mobileLatencyDiff = document.getElementById(`mobile-latency-diff-${safeId}`);
-
-        const resultHtml = result.success ? `
-          <div class="flex items-center gap-2">
-            <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-green-500 text-white">UP</span>
-            <span class="text-sm text-gray-300">${result.latency}ms</span>
-          </div>
-        ` : `
-          <div class="flex items-center gap-2">
-            <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-red-500 text-white">DOWN</span>
-            <span class="text-sm text-gray-300">${result.latency}ms</span>
-          </div>
-        `;
-
-        const mobileResultHtml = result.success ? `
-          <div class="flex items-center gap-1">
-            <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-green-500 text-white">UP</span>
-            <span class="text-xs text-gray-300">${result.latency}ms</span>
-          </div>
-        ` : `
-          <div class="flex items-center gap-1">
-            <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-red-500 text-white">DOWN</span>
-            <span class="text-xs text-gray-300">${result.latency}ms</span>
-          </div>
-        `;
-
-        userResultCell.innerHTML = resultHtml;
-        mobileUserResult.innerHTML = mobileResultHtml;
-
-        // Update test method
-        let methodColor = 'text-blue-400';
-        if (result.method === 'Via CORS proxy (Lambda)') {
-          methodColor = 'text-yellow-400';
-        } else if (result.method === 'CORS blocked entirely') {
-          methodColor = 'text-red-400';
-        }
-
-        if (testMethodCell) testMethodCell.innerHTML = `<span class="${methodColor} text-sm">${result.method}</span>`;
-        mobileTestMethod.innerHTML = `<span class="${methodColor} text-xs">${result.method}</span>`;
-
-        // Calculate and display latency difference
-        if (api.latency && result.latency) {
-          const diff = result.latency - api.latency;
-          const diffText = diff > 0 ? `+${diff}ms` : `${diff}ms`;
-          const diffColor = Math.abs(diff) < 100 ? 'text-green-400' : (diff > 0 ? 'text-red-400' : 'text-blue-400');
-
-          if (latencyDiffCell) latencyDiffCell.innerHTML = `<span class="${diffColor} text-sm font-mono">${diffText}</span>`;
-          mobileLatencyDiff.querySelector('div').innerHTML = `<span class="${diffColor} text-xs font-mono">${diffText}</span>`;
-        } else {
-          if (latencyDiffCell) latencyDiffCell.innerHTML = '<span class="text-gray-400 text-sm">--</span>';
-          mobileLatencyDiff.querySelector('div').innerHTML = '<span class="text-gray-400 text-xs">--</span>';
-        }
+      }, 5000);
+    }
+
+    stopAutoRefresh() {
+      if (this.refreshInterval) {
+        clearInterval(this.refreshInterval);
+        this.refreshInterval = null;
       }
     }
 
-    // Initialize the app
-    document.addEventListener('DOMContentLoaded', () => {
-      window.apiMonitor = new APIMonitor();
-    });
-  </script>
+    updateScrollIndicator() {
+      const scrollTop = window.pageYOffset;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = (scrollTop / docHeight) * 100;
+      document.getElementById('scrollIndicator').style.width = scrollPercent + '%';
+    }
+
+    showNotification(message, type = 'success') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.className = `notification ${type}`;
+      notification.classList.add('show');
+
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+
+    async loadStatus(showNotification = false, retry = 1) {
+      const refreshBtn = document.getElementById('refresh-btn');
+      const icon = refreshBtn.querySelector('i');
+      icon.style.animation = 'spin 1s linear infinite';
+
+      if (showNotification) {
+        this.showLoadingState();
+      }
+
+      try {
+        const [statusRes, historyRes] = await Promise.all([
+          fetch('https://api-monitor-data-bu.s3.us-east-1.amazonaws.com/frontend/status.json'),
+          fetch('https://api-monitor-data-bu.s3.us-east-1.amazonaws.com/frontend/history.json')
+        ]);
+
+        if (!statusRes.ok) throw new Error('Failed to fetch status');
+
+        this.apis = await statusRes.json();
+        this.history = historyRes.ok ? await historyRes.json() : [];
+
+        // Ensure critical is a boolean (defaults to false if missing)
+        this.apis = this.apis.map(api => ({ ...api, critical: !!api.critical }));
+
+        this.renderAPIs();
+        this.updateStats();
+        this.updateTimestamp();
+
+        if (showNotification) {
+          this.showNotification('Data refreshed successfully!', 'success');
+        }
+
+      } catch (error) {
+        console.error('Error loading status:', error);
+        if (showNotification) {
+          this.showError();
+        }
+        this.showNotification('Failed to load data', 'error');
+
+        // Retry once
+        if (retry > 0) {
+          setTimeout(() => this.loadStatus(showNotification, retry - 1), 2000);
+        }
+      } finally {
+        icon.style.animation = '';
+      }
+    }
+
+    showLoadingState() {
+      const container = document.getElementById('dashboard');
+      container.innerHTML = '';
+
+      for (let i = 0; i < 6; i++) {
+        const loadingCard = document.getElementById('loading-template').content.cloneNode(true);
+        container.appendChild(loadingCard);
+      }
+    }
+
+    showError() {
+      const container = document.getElementById('dashboard');
+      container.innerHTML = `
+        <div class="col-span-full glass-morphism rounded-2xl p-12 text-center">
+          <div class="mb-6">
+            <i class="fas fa-exclamation-triangle text-6xl text-red-500 mb-4"></i>
+            <h2 class="text-2xl font-bold text-gray-200 mb-2">Data Not Available</h2>
+            <p class="text-gray-400">Unable to load API status. Please try again later.</p>
+          </div>
+          <button onclick="window.apiMonitor.loadStatus(true)" class="glass-morphism hover:bg-blue-500 text-blue-600 hover:text-white px-6 py-3 rounded-xl transition-all duration-300">
+            <i class="fas fa-sync-alt mr-2"></i>Retry
+          </button>
+        </div>
+      `;
+    }
+
+    updateStats() {
+      const upCount = this.apis.filter(api => api.status === 'UP').length;
+      const downCount = this.apis.filter(api => api.status === 'DOWN').length;
+      const criticalCount = this.apis.filter(api => api.critical).length;
+
+      // Calculate average latency only from valid positive values
+      const validLatencies = this.apis
+        .map(api => api.latency && api.latency > 0 ? Math.max(0, api.latency) : 0)
+        .filter(latency => latency > 0);
+
+      const avgLatency = validLatencies.length
+        ? Math.round(validLatencies.reduce((sum, latency) => sum + latency, 0) / validLatencies.length)
+        : 0;
+
+      const uptime = this.apis.length ? Math.round((upCount / this.apis.length) * 100) : 0;
+
+      document.getElementById('total-up').textContent = upCount;
+      document.getElementById('total-down').textContent = downCount;
+      document.getElementById('avg-latency').textContent = avgLatency + 'ms';
+      document.getElementById('uptime-percent').textContent = uptime + '%';
+
+      // Update filter counts using data attributes
+      const counts = { all: this.apis.length, up: upCount, down: downCount, critical: criticalCount };
+      document.querySelectorAll('[data-count]').forEach(el => {
+        el.textContent = counts[el.dataset.count] || '0';
+      });
+    }
+
+    updateTimestamp() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString();
+      document.getElementById('last-updated').innerHTML = `
+        <i class="fas fa-clock mr-2"></i>
+        Last updated: ${timeString}
+      `;
+      document.getElementById('footer-time').textContent = timeString;
+    }
+
+    filterAPIs() {
+      return this.apis.filter(api => {
+        // Filter by category
+        let matchesFilter = true;
+        if (this.currentFilter === 'up') matchesFilter = api.status === 'UP';
+        else if (this.currentFilter === 'down') matchesFilter = api.status === 'DOWN';
+        else if (this.currentFilter === 'critical') matchesFilter = api.critical;
+
+        // Filter by search term
+        const matchesSearch = this.searchTerm === '' ||
+          api.name.toLowerCase().includes(this.searchTerm) ||
+          api.url.toLowerCase().includes(this.searchTerm);
+
+        return matchesFilter && matchesSearch;
+      });
+    }
+
+    sortAPIs(apis) {
+      return apis.sort((a, b) => {
+        switch (this.currentSort) {
+          case 'name':
+            return a.name.localeCompare(b.name);
+          case 'latency-high':
+            const aLatencyHigh = Math.max(0, a.latency || 0);
+            const bLatencyHigh = Math.max(0, b.latency || 0);
+            return bLatencyHigh - aLatencyHigh;
+          case 'latency-low':
+            const aLatencyLow = Math.max(0, a.latency || 0);
+            const bLatencyLow = Math.max(0, b.latency || 0);
+            return aLatencyLow - bLatencyLow;
+          default:
+            return 0;
+        }
+      });
+    }
+
+    calculateUptime(apiName) {
+      const apiHistory = this.history.filter(item => item.name === apiName).slice(-24);
+      if (apiHistory.length === 0) return 0;
+      const upCount = apiHistory.filter(item => item.status === 'UP').length;
+      return Math.round((upCount / apiHistory.length) * 100);
+    }
+
+    getLatencyCategory(latency) {
+      // Ensure latency is positive and valid
+      const validLatency = latency && latency > 0 ? Math.max(0, latency) : null;
+
+      if (!validLatency) return { category: 'Unknown', class: 'status-warning', color: '#6b7280' };
+      if (validLatency <= 300) return { category: 'Excellent', class: 'status-up', color: '#10b981' };
+      if (validLatency <= 1000) return { category: 'Good', class: 'status-warning', color: '#f59e0b' };
+      return { category: 'Slow', class: 'status-down', color: '#ef4444' };
+    }
+
+    renderAPIs() {
+      const container = document.getElementById('dashboard');
+      const filteredAPIs = this.filterAPIs();
+      const sortedAPIs = this.sortAPIs(filteredAPIs);
+
+      container.innerHTML = '';
+
+      if (sortedAPIs.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full glass-morphism rounded-2xl p-12 text-center">
+            <i class="fas fa-search text-4xl text-gray-400 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-300">No APIs Found</h3>
+            <p class="text-gray-500 dark:text-gray-400">Try adjusting your search or filter criteria.</p>
+          </div>
+        `;
+        return;
+      }
+
+      sortedAPIs.forEach(api => this.createAPICard(api, container));
+    }
+
+    createAPICard(api, container) {
+      const card = document.getElementById('api-card-template').content.cloneNode(true);
+      const latencyInfo = this.getLatencyCategory(api.latency);
+      const uptime = this.calculateUptime(api.name);
+
+      // Basic info
+      card.querySelector('h3').textContent = api.name;
+      card.querySelector('.api-url').textContent = api.url;
+
+      // Status indicator and badge
+      const statusIndicator = card.querySelector('.status-indicator');
+      const statusBadge = card.querySelector('.status-badge');
+
+      if (api.status === 'UP') {
+        statusIndicator.className = 'status-indicator status-up';
+        statusBadge.className = 'status-badge px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white';
+        statusBadge.textContent = latencyInfo.category;
+      } else {
+        statusIndicator.className = 'status-indicator status-down';
+        statusBadge.className = 'status-badge px-3 py-1 rounded-full text-xs font-bold bg-red-500 text-white';
+        statusBadge.textContent = 'DOWN';
+      }
+
+      // Critical tag
+      if (api.critical) {
+        card.querySelector('.critical-tag').classList.remove('hidden');
+        card.querySelector('.api-card').classList.add('critical-glow');
+      }
+
+      // Details
+      card.querySelector('.status-text').textContent = api.status;
+      card.querySelector('.code-text').textContent = api.code || '--';
+      const displayLatency = api.latency && api.latency > 0 ? Math.max(0, api.latency) : null;
+      card.querySelector('.latency-text').textContent = displayLatency ? `${displayLatency}ms` : '--';
+      card.querySelector('.time-text').textContent = new Date(api.timestamp).toLocaleTimeString();
+
+      // Latency bar
+      const latencyProgress = card.querySelector('.latency-progress');
+      if (displayLatency) {
+        const percentage = Math.min(100, (displayLatency / 2000) * 100);
+        latencyProgress.style.width = `${percentage}%`;
+        latencyProgress.style.background = `linear-gradient(90deg, ${latencyInfo.color}, ${latencyInfo.color}dd)`;
+      }
+
+      card.querySelector('.latency-category').textContent = latencyInfo.category;
+
+      // Uptime chart
+      this.renderUptimeChart(card, api.name);
+      card.querySelector('.uptime-percentage').textContent = `${uptime}%`;
+
+      // History
+      this.renderHistory(card, api.name);
+
+      // Toggle history
+      const toggleBtn = card.querySelector('.toggle-history');
+      const historyContainer = card.querySelector('.history-container');
+
+      toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+
+        // Close other history panels
+        document.querySelectorAll('.history-container').forEach(container => {
+          if (container !== historyContainer) {
+            container.classList.add('hidden');
+            const otherToggle = container.closest('.api-card').querySelector('.toggle-history');
+            otherToggle.innerHTML = '<i class="fas fa-chevron-down"></i><span>Show History</span>';
+          }
+        });
+
+        // Toggle current panel
+        const isHidden = historyContainer.classList.contains('hidden');
+        historyContainer.classList.toggle('hidden');
+        toggleBtn.innerHTML = isHidden
+          ? '<i class="fas fa-chevron-up"></i><span>Hide History</span>'
+          : '<i class="fas fa-chevron-down"></i><span>Show History</span>';
+      });
+
+      container.appendChild(card);
+    }
+
+    renderUptimeChart(card, apiName) {
+      const chartContainer = card.querySelector('.uptime-chart');
+      const apiHistory = this.history.filter(item => item.name === apiName).slice(-24);
+
+      chartContainer.innerHTML = '';
+
+      if (apiHistory.length === 0) {
+        chartContainer.innerHTML = '<div class="text-xs text-gray-500 text-center">No data</div>';
+        return;
+      }
+
+      apiHistory.forEach(item => {
+        const bar = document.createElement('div');
+        bar.className = 'uptime-bar';
+
+        if (item.status === 'UP') {
+          if (item.latency > 1000) bar.classList.add('moderate');
+          else bar.classList.add('up');
+        } else {
+          bar.classList.add('down');
+        }
+
+        bar.title = `${new Date(item.timestamp).toLocaleTimeString()}: ${item.status} (${item.latency || '--'}ms)`;
+        chartContainer.appendChild(bar);
+      });
+    }
+
+    renderHistory(card, apiName) {
+      const historyContainer = card.querySelector('.history-timeline');
+      const apiHistory = this.history.filter(item => item.name === apiName).slice(-10);
+
+      historyContainer.innerHTML = '';
+
+      apiHistory.reverse().forEach(item => {
+        const historyItem = document.createElement('div');
+        let statusClass = item.status.toLowerCase();
+
+        if (item.status === 'UP' && item.latency > 1000) {
+          statusClass = 'moderate';
+        }
+
+        historyItem.className = `history-item ${statusClass}`;
+        historyItem.innerHTML = `
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-xs font-medium">${new Date(item.timestamp).toLocaleTimeString()}</span>
+            <span class="text-xs px-2 py-1 rounded-full ${item.status === 'UP' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${item.status}</span>
+          </div>
+          <div class="flex justify-between text-xs text-gray-400">
+            <span>${item.latency ? item.latency + 'ms' : '--'}</span>
+            <span>HTTP ${item.code || '--'}</span>
+          </div>
+        `;
+
+        historyContainer.appendChild(historyItem);
+      });
+    }
+
+    // Location Testing Methods
+    openLocationTestModal() {
+      const modal = document.getElementById('location-test-modal');
+      modal.classList.remove('hidden');
+
+      // Store original body overflow and prevent background scrolling
+      this.originalBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+
+      // Update API count
+      document.getElementById('total-apis-count').textContent = this.apis.length;
+
+      // Initialize results table
+      this.initializeLocationTestTable();
+    }
+
+    closeLocationTestModal() {
+      const modal = document.getElementById('location-test-modal');
+      modal.classList.add('hidden');
+
+      // Restore original body overflow
+      document.body.style.overflow = this.originalBodyOverflow || 'auto';
+
+      // Stop any running tests
+      this.stopLocationTest();
+    }
+
+    initializeLocationTestTable() {
+      const tbody = document.getElementById('location-test-results');
+      const mobileResults = document.getElementById('mobile-test-results');
+      tbody.innerHTML = '';
+      mobileResults.innerHTML = '';
+
+      this.apis.forEach(api => {
+        const safeId = api.name.replace(/[^a-zA-Z0-9]/g, '');
+
+        // Desktop table row
+        const row = document.createElement('tr');
+        row.className = 'border-b border-gray-800 hover:bg-gray-900/30 transition-colors';
+        row.innerHTML = `
+          <td class="px-2 sm:px-3 lg:px-4 py-3">
+            <div class="font-medium text-white text-xs sm:text-sm lg:text-base">${api.name}</div>
+            <div class="text-xs text-gray-400 truncate max-w-[120px] sm:max-w-[150px] lg:max-w-[200px]">${api.url}</div>
+          </td>
+          <td class="px-2 sm:px-3 lg:px-4 py-3">
+            <div class="flex items-center gap-1 sm:gap-2">
+              <span class="status-badge px-1.5 sm:px-2 py-1 rounded-full text-xs font-bold ${api.status === 'UP' ? 'bg-green-500' : 'bg-red-500'} text-white">
+                ${api.status}
+              </span>
+              <span class="text-xs sm:text-sm text-gray-300">${api.latency ? api.latency + 'ms' : '--'}</span>
+            </div>
+          </td>
+          <td class="px-2 sm:px-3 lg:px-4 py-3" id="user-result-${safeId}">
+            <span class="text-gray-400 text-xs sm:text-sm">Not tested</span>
+          </td>
+          <td class="px-2 sm:px-3 lg:px-4 py-3 hidden lg:table-cell" id="test-method-${safeId}">
+            <span class="text-gray-400 text-xs sm:text-sm">--</span>
+          </td>
+          <td class="px-2 sm:px-3 lg:px-4 py-3 hidden xl:table-cell" id="latency-diff-${safeId}">
+            <span class="text-gray-400 text-xs sm:text-sm">--</span>
+          </td>
+        `;
+        tbody.appendChild(row);
+
+        // Mobile card
+        const mobileCard = document.createElement('div');
+        mobileCard.className = 'mobile-card';
+        mobileCard.innerHTML = `
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex-1 min-w-0">
+              <h3 class="font-medium text-white text-sm sm:text-base mb-1">${api.name}</h3>
+              <p class="text-xs sm:text-sm text-gray-400 truncate">${api.url}</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+            <div class="space-y-2">
+              <div>
+                <span class="text-gray-500 font-medium">Server:</span>
+                <div class="flex items-center gap-1 mt-1">
+                  <span class="status-badge px-2 py-1 rounded-full text-xs font-bold ${api.status === 'UP' ? 'bg-green-500' : 'bg-red-500'} text-white">
+                    ${api.status}
+                  </span>
+                  <span class="text-gray-300">${api.latency ? api.latency + 'ms' : '--'}</span>
+                </div>
+              </div>
+
+              <div>
+                <span class="text-gray-500 font-medium">Your Location:</span>
+                <div class="mt-1" id="mobile-user-result-${safeId}">
+                  <span class="text-gray-400">Not tested</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <div>
+                <span class="text-gray-500 font-medium">Method:</span>
+                <div class="mt-1" id="mobile-test-method-${safeId}">
+                  <span class="text-gray-400">--</span>
+                </div>
+              </div>
+
+              <div id="mobile-latency-diff-${safeId}">
+                <span class="text-gray-500 font-medium">Latency Diff:</span>
+                <div class="mt-1">
+                  <span class="text-gray-400">--</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        mobileResults.appendChild(mobileCard);
+      });
+    }
+
+    async startLocationTest() {
+      this.isLocationTesting = true;
+      const startBtn = document.getElementById('start-location-test');
+      const stopBtn = document.getElementById('stop-location-test');
+      const progressSpan = document.getElementById('test-progress');
+
+      startBtn.classList.add('hidden');
+      stopBtn.classList.remove('hidden');
+
+      // Lambda proxy URL (Mumbai region for Indian users)
+      this.lambdaProxyUrl = 'https://gbyqtlkyraiyuz4w6iwsvckvmm0ocakj.lambda-url.ap-south-1.on.aws/';
+
+      let completed = 0;
+
+      for (const api of this.apis) {
+        if (!this.isLocationTesting) break;
+
+        completed++;
+        progressSpan.textContent = `Testing ${completed} of ${this.apis.length} APIs...`;
+
+        const safeId = api.name.replace(/[^a-zA-Z0-9]/g, '');
+        const userResultCell = document.getElementById(`user-result-${safeId}`);
+
+        // Show testing indicator
+        userResultCell.innerHTML = '<span class="text-blue-400 text-sm"><i class="fas fa-spinner fa-spin mr-1"></i>Testing...</span>';
+
+        try {
+          const result = await this.testApiFromLocation(api);
+          this.updateLocationTestResult(safeId, api, result);
+        } catch (error) {
+          console.error(`Error testing ${api.name}:`, error);
+          userResultCell.innerHTML = '<span class="text-red-400 text-sm">Test failed</span>';
+          document.getElementById(`test-method-${safeId}`).innerHTML = '<span class="text-gray-400 text-sm">Error</span>';
+        }
+
+        // Small delay between tests to avoid overwhelming
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      if (this.isLocationTesting) {
+        progressSpan.textContent = `Completed testing ${this.apis.length} APIs`;
+      }
+
+      this.stopLocationTest();
+    }
+
+    stopLocationTest() {
+      this.isLocationTesting = false;
+      const startBtn = document.getElementById('start-location-test');
+      const stopBtn = document.getElementById('stop-location-test');
+
+      startBtn.classList.remove('hidden');
+      stopBtn.classList.add('hidden');
+    }
+
+    async testApiFromLocation(api) {
+      const startTime = performance.now();
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+        const response = await fetch(api.url, {
+          method: 'GET',
+          mode: 'cors',
+          cache: 'no-store',
+          signal: controller.signal,
+          headers: {
+            'Accept': 'application/json, text/plain, */*'
+          }
+        });
+
+        clearTimeout(timeoutId);
+        const endTime = performance.now();
+        const latency = Math.round(endTime - startTime);
+
+        return {
+          success: true,
+          status: response.status,
+          latency,
+          method: 'Direct from your browser',
+          error: null
+        };
+
+      } catch (error) {
+        // If direct request fails (likely CORS), try Lambda proxy
+        if (error.name === 'TypeError' || error.message.includes('CORS') || error.message.includes('fetch')) {
+          return await this.testApiViaProxy(api, startTime);
+        }
+
+        const endTime = performance.now();
+        const latency = Math.round(endTime - startTime);
+
+        return {
+          success: false,
+          status: null,
+          latency,
+          method: 'Direct from your browser',
+          error: error.message
+        };
+      }
+    }
+
+    async testApiViaProxy(api, originalStartTime) {
+      try {
+        const proxyStartTime = performance.now();
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+        const response = await fetch(this.lambdaProxyUrl, {
+          method: 'POST',
+          mode: 'cors',
+          cache: 'no-store',
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            url: api.url,
+            method: 'GET',
+            timeout: 10
+          })
+        });
+
+        clearTimeout(timeoutId);
+        const endTime = performance.now();
+        const totalLatency = Math.round(endTime - originalStartTime);
+
+        if (!response.ok) {
+          throw new Error(`Proxy error: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        return {
+          success: result.success,
+          status: result.status_code,
+          latency: result.latency_ms, // Use the Lambda's measured latency
+          method: 'Via CORS proxy (Lambda)',
+          error: result.error
+        };
+
+      } catch (error) {
+        const endTime = performance.now();
+        const latency = Math.round(endTime - originalStartTime);
+
+        return {
+          success: false,
+          status: null,
+          latency,
+          method: 'CORS blocked entirely',
+          error: error.message
+        };
+      }
+    }
+
+    updateLocationTestResult(safeId, api, result) {
+      // Update desktop table
+      const userResultCell = document.getElementById(`user-result-${safeId}`);
+      const testMethodCell = document.getElementById(`test-method-${safeId}`);
+      const latencyDiffCell = document.getElementById(`latency-diff-${safeId}`);
+
+      // Update mobile cards
+      const mobileUserResult = document.getElementById(`mobile-user-result-${safeId}`);
+      const mobileTestMethod = document.getElementById(`mobile-test-method-${safeId}`);
+      const mobileLatencyDiff = document.getElementById(`mobile-latency-diff-${safeId}`);
+
+      const resultHtml = result.success ? `
+        <div class="flex items-center gap-2">
+          <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-green-500 text-white">UP</span>
+          <span class="text-sm text-gray-300">${result.latency}ms</span>
+        </div>
+      ` : `
+        <div class="flex items-center gap-2">
+          <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-red-500 text-white">DOWN</span>
+          <span class="text-sm text-gray-300">${result.latency}ms</span>
+        </div>
+      `;
+
+      const mobileResultHtml = result.success ? `
+        <div class="flex items-center gap-1">
+          <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-green-500 text-white">UP</span>
+          <span class="text-xs text-gray-300">${result.latency}ms</span>
+        </div>
+      ` : `
+        <div class="flex items-center gap-1">
+          <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-red-500 text-white">DOWN</span>
+          <span class="text-xs text-gray-300">${result.latency}ms</span>
+        </div>
+      `;
+
+      userResultCell.innerHTML = resultHtml;
+      mobileUserResult.innerHTML = mobileResultHtml;
+
+      // Update test method
+      let methodColor = 'text-blue-400';
+      if (result.method === 'Via CORS proxy (Lambda)') {
+        methodColor = 'text-yellow-400';
+      } else if (result.method === 'CORS blocked entirely') {
+        methodColor = 'text-red-400';
+      }
+
+      if (testMethodCell) testMethodCell.innerHTML = `<span class="${methodColor} text-sm">${result.method}</span>`;
+      mobileTestMethod.innerHTML = `<span class="${methodColor} text-xs">${result.method}</span>`;
+
+      // Calculate and display latency difference
+      if (api.latency && result.latency) {
+        const diff = result.latency - api.latency;
+        const diffText = diff > 0 ? `+${diff}ms` : `${diff}ms`;
+        const diffColor = Math.abs(diff) < 100 ? 'text-green-400' : (diff > 0 ? 'text-red-400' : 'text-blue-400');
+
+        if (latencyDiffCell) latencyDiffCell.innerHTML = `<span class="${diffColor} text-sm font-mono">${diffText}</span>`;
+        mobileLatencyDiff.querySelector('div').innerHTML = `<span class="${diffColor} text-xs font-mono">${diffText}</span>`;
+      } else {
+        if (latencyDiffCell) latencyDiffCell.innerHTML = '<span class="text-gray-400 text-sm">--</span>';
+        mobileLatencyDiff.querySelector('div').innerHTML = '<span class="text-gray-400 text-xs">--</span>';
+      }
+    }
+  }
+
+  // Initialize the app
+  document.addEventListener('DOMContentLoaded', () => {
+    window.apiMonitor = new APIMonitor();
+  });
+</script>
 </body>
 </html>

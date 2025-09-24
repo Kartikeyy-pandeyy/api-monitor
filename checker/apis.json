@@ -10,13 +10,8 @@
     "critical": true
   },
   {
-    "name": "JSONPlaceholder API",
+    "name": "JSONPlaceholder Posts",
     "url": "https://jsonplaceholder.typicode.com/posts/1",
-    "critical": false
-  },
-  {
-    "name": "HTTPBin API",
-    "url": "https://httpbin.org/status/200",
     "critical": false
   },
   {
@@ -55,18 +50,8 @@
     "critical": false
   },
   {
-    "name": "HTTPBin IP Info",
-    "url": "https://httpbin.org/ip",
-    "critical": false
-  },
-  {
     "name": "Cat Facts API",
     "url": "https://catfact.ninja/fact",
-    "critical": false
-  },
-  {
-    "name": "Public APIs List",
-    "url": "https://api.publicapis.org/entries?category=animals&limit=1",
     "critical": false
   },
   {
@@ -75,33 +60,8 @@
     "critical": false
   },
   {
-    "name": "Quote Garden",
-    "url": "https://quotegarden.herokuapp.com/api/v3/quotes/random",
-    "critical": false
-  },
-  {
-    "name": "OpenWeatherMap Test",
-    "url": "https://samples.openweathermap.org/data/2.5/weather?q=London&appid=b1b15e88fa797225412429c1c50c122a1",
-    "critical": false
-  },
-  {
-    "name": "CORS Test API",
-    "url": "https://cors-test.herokuapp.com/test",
-    "critical": false
-  },
-  {
     "name": "Free Dictionary API",
     "url": "https://api.dictionaryapi.dev/api/v2/entries/en/hello",
-    "critical": false
-  },
-  {
-    "name": "Universities API",
-    "url": "https://universities.hipolabs.com/search?country=United+States&limit=1",
-    "critical": false
-  },
-  {
-    "name": "Reqres API",
-    "url": "https://reqres.in/api/users/1",
     "critical": false
   },
   {
@@ -112,6 +72,181 @@
   {
     "name": "PokeAPI",
     "url": "https://pokeapi.co/api/v2/pokemon/1",
+    "critical": false
+  },
+  {
+    "name": "CoinDesk Bitcoin Price",
+    "url": "https://api.coindesk.com/v1/bpi/currentprice.json",
+    "critical": false
+  },
+  {
+    "name": "Bored Activity",
+    "url": "https://www.boredapi.com/api/activity",
+    "critical": false
+  },
+  {
+    "name": "Agify Age Prediction",
+    "url": "https://api.agify.io?name=john",
+    "critical": false
+  },
+  {
+    "name": "Genderize Gender Prediction",
+    "url": "https://api.genderize.io?name=john",
+    "critical": false
+  },
+  {
+    "name": "Nationalize Nationality Prediction",
+    "url": "https://api.nationalize.io?name=john",
+    "critical": false
+  },
+  {
+    "name": "IPify IP Address",
+    "url": "https://api.ipify.org?format=json",
+    "critical": false
+  },
+  {
+    "name": "IPinfo Geo",
+    "url": "https://ipinfo.io/json",
+    "critical": false
+  },
+  {
+    "name": "Jokes API",
+    "url": "https://official-joke-api.appspot.com/random_joke",
+    "critical": false
+  },
+  {
+    "name": "RandomUser Generator",
+    "url": "https://randomuser.me/api/",
+    "critical": false
+  },
+  {
+    "name": "APIs.guru Directory",
+    "url": "https://api.apis.guru/v2/list.json",
+    "critical": false
+  },
+  {
+    "name": "Art Institute of Chicago",
+    "url": "https://api.artic.edu/api/v1/artworks/search?q=cats",
+    "critical": false
+  },
+  {
+    "name": "DiceBear Avatars",
+    "url": "https://api.dicebear.com/7.x/pixel-art/json",
+    "critical": false
+  },
+  {
+    "name": "HTTP Cats",
+    "url": "https://http.cat/status/200",
+    "critical": false
+  },
+  {
+    "name": "Lorem Picsum",
+    "url": "https://picsum.photos/200/300?random=1",
+    "critical": false
+  },
+  {
+    "name": "Metropolitan Museum of Art",
+    "url": "https://collectionapi.metmuseum.org/public/collection/v1/objects/100",
+    "critical": false
+  },
+  {
+    "name": "Placebear",
+    "url": "https://placebear.com/200/300",
+    "critical": false
+  },
+  {
+    "name": "RandomFox",
+    "url": "https://randomfox.ca/floof/",
+    "critical": false
+  },
+  {
+    "name": "RoboHash",
+    "url": "https://robohash.org/test.png",
+    "critical": false
+  },
+  {
+    "name": "Nager.Date Holidays",
+    "url": "https://date.nager.at/api/v3/PublicHolidays/2025/US",
+    "critical": false
+  },
+  {
+    "name": "UK Bank Holidays",
+    "url": "https://www.gov.uk/bank-holidays.json",
+    "critical": false
+  },
+  {
+    "name": "HackerNews Item",
+    "url": "https://hacker-news.firebaseio.com/v0/item/8863.json",
+    "critical": false
+  },
+  {
+    "name": "Ice and Fire Characters",
+    "url": "https://anapioficeandfire.com/api/characters/583",
+    "critical": false
+  },
+  {
+    "name": "Jikan Anime",
+    "url": "https://api.jikan.moe/v4/anime/1",
+    "critical": false
+  },
+  {
+    "name": "Rick and Morty Characters",
+    "url": "https://rickandmortyapi.com/api/character/1",
+    "critical": false
+  },
+  {
+    "name": "SWAPI Star Wars",
+    "url": "https://swapi.dev/api/people/1/",
+    "critical": false
+  },
+  {
+    "name": "TVMaze Shows",
+    "url": "https://api.tvmaze.com/search/shows?q=batman",
+    "critical": false
+  },
+  {
+    "name": "MusicBrainz",
+    "url": "https://musicbrainz.org/ws/2/artist/5b11f4ce-a62d-471e-81fc-a69a8278c7da?fmt=json",
+    "critical": false
+  },
+  {
+    "name": "Buddha Quotes",
+    "url": "https://buddha-quotes.vercel.app/api/quotes/random",
+    "critical": false
+  },
+  {
+    "name": "Numbers API",
+    "url": "http://numbersapi.com/42",
+    "critical": false
+  },
+  {
+    "name": "PoetryDB",
+    "url": "https://poetrydb.org/author/Shakespeare",
+    "critical": false
+  },
+  {
+    "name": "FunTranslations Yoda",
+    "url": "https://api.funtranslations.com/translate/yoda.json?text=Hello%20world",
+    "critical": false
+  },
+  {
+    "name": "Random Cat",
+    "url": "https://aws.random.cat/meow",
+    "critical": false
+  },
+  {
+    "name": "TheCocktailDB",
+    "url": "https://www.thecocktaildb.com/api/json/v1/1/search.php?s=margarita",
+    "critical": false
+  },
+  {
+    "name": "TheMealDB",
+    "url": "https://www.themealdb.com/api/json/v1/1/random.php",
+    "critical": false
+  },
+  {
+    "name": "Kanye Quotes",
+    "url": "https://api.kanye.rest",
     "critical": false
   }
 ]
