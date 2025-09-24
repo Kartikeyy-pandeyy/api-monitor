@@ -58,5 +58,95 @@
     "name": "Python Official",
     "url": "https://www.python.org",
     "critical": true
+  },
+  {
+    "name": "Microsoft Homepage",
+    "url": "https://www.microsoft.com",
+    "critical": true
+  },
+  {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "critical": true
+  },
+  {
+    "name": "GitHub Status",
+    "url": "https://www.githubstatus.com/api/v2/status.json",
+    "critical": true
+  },
+  {
+    "name": "Vercel Homepage",
+    "url": "https://vercel.com",
+    "critical": false
+  },
+  {
+    "name": "Netlify Homepage",
+    "url": "https://www.netlify.com",
+    "critical": false
+  },
+  {
+    "name": "Mozilla Firefox",
+    "url": "https://www.mozilla.org",
+    "critical": false
+  },
+  {
+    "name": "VS Code Homepage",
+    "url": "https://code.visualstudio.com",
+    "critical": false
+  },
+  {
+    "name": "React Homepage",
+    "url": "https://reactjs.org",
+    "critical": false
+  },
+  {
+    "name": "Vue.js Homepage",
+    "url": "https://vuejs.org",
+    "critical": false
+  },
+  {
+    "name": "Angular Homepage",
+    "url": "https://angular.io",
+    "critical": false
+  },
+  {
+    "name": "Tailwind CSS",
+    "url": "https://tailwindcss.com",
+    "critical": false
+  },
+  {
+    "name": "Bootstrap",
+    "url": "https://getbootstrap.com",
+    "critical": false
+  },
+  {
+    "name": "MDN Web Docs",
+    "url": "https://developer.mozilla.org",
+    "critical": false
+  },
+  {
+    "name": "Can I Use",
+    "url": "https://caniuse.com",
+    "critical": false
+  },
+  {
+    "name": "Redis Homepage",
+    "url": "https://redis.io",
+    "critical": false
+  },
+  {
+    "name": "MongoDB Homepage",
+    "url": "https://www.mongodb.com",
+    "critical": false
+  },
+  {
+    "name": "PostgreSQL Homepage",
+    "url": "https://www.postgresql.org",
+    "critical": false
+  },
+  {
+    "name": "MySQL Homepage",
+    "url": "https://www.mysql.com",
+    "critical": false
   }
 ]

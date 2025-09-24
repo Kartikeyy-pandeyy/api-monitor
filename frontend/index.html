@@ -298,8 +298,75 @@
       }
 
       .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
       }
+
+      .metric-card {
+        padding: 1rem;
+      }
+
+      .api-card {
+        padding: 1rem;
+      }
+
+      .api-card h3 {
+        font-size: 1.125rem;
+      }
+
+      .api-card .grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .history-container {
+        display: none !important;
+      }
+
+      .toggle-history {
+        display: none !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+      }
+
+      .metric-card {
+        padding: 0.75rem;
+      }
+
+      .metric-card p:first-child {
+        font-size: 1.25rem;
+      }
+
+      .api-card {
+        padding: 0.75rem;
+        border-radius: 1rem;
+      }
+
+      .container {
+        padding: 0.75rem;
+      }
+
+      .glow-text {
+        font-size: 1.875rem !important;
+      }
+
+      .scroll-indicator {
+        height: 2px;
+      }
+    }
+
+    .mobile-card {
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
     }
 
     .theme-transition {
@@ -397,33 +464,34 @@
 
   <div id="notification" class="notification"></div>
 
-  <main class="container mx-auto p-4 sm:p-6 max-w-7xl">
+  <main class="container mx-auto p-2 sm:p-4 lg:p-6 max-w-7xl">
     <!-- Header Section -->
-    <header class="glass-morphism rounded-2xl p-6 mb-8 relative overflow-hidden">
+    <header class="glass-morphism rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-8 relative overflow-hidden">
       <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10"></div>
       <div class="relative z-10">
         <div class="flex flex-col lg:flex-row justify-between items-center">
-          <div class="text-center lg:text-left mb-6 lg:mb-0">
-            <h1 class="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2 glow-text">
+          <div class="text-center lg:text-left mb-4 sm:mb-6 lg:mb-0 w-full lg:w-auto">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2 glow-text">
               🔍 API Health Monitor
             </h1>
-            <p class="text-gray-100 text-lg">Real-time monitoring dashboard for all your services</p>
+            <p class="text-gray-100 text-sm sm:text-base lg:text-lg">Real-time monitoring dashboard for all your services</p>
           </div>
 
-          <div class="flex flex-wrap items-center gap-4">
-            <div class="glass-morphism rounded-lg px-4 py-2">
-              <p id="last-updated" class="text-sm text-gray-600 dark:text-gray-400 flex items-center">
+          <div class="flex flex-col sm:flex-row flex-wrap items-center gap-2 sm:gap-4 w-full lg:w-auto">
+            <div class="glass-morphism rounded-lg px-3 sm:px-4 py-2 w-full sm:w-auto">
+              <p id="last-updated" class="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex items-center justify-center sm:justify-start">
                 <i class="fas fa-clock mr-2"></i>
                 <span class="loading-dots">Loading</span>
               </p>
             </div>
 
-            <button id="test-from-location-btn" class="glass-morphism hover:bg-purple-500 text-purple-400 hover:text-white px-6 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 font-medium">
+            <button id="test-from-location-btn" class="glass-morphism hover:bg-purple-500 text-purple-400 hover:text-white px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 font-medium text-xs sm:text-sm w-full sm:w-auto justify-center">
               <i class="fas fa-map-marker-alt"></i>
-              Test from My Location
+              <span class="hidden sm:inline">Test from My Location</span>
+              <span class="sm:hidden">Location Test</span>
             </button>
 
-            <button id="refresh-btn" class="glass-morphism hover:bg-blue-500 text-blue-400 hover:text-white px-6 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 font-medium">
+            <button id="refresh-btn" class="glass-morphism hover:bg-blue-500 text-blue-400 hover:text-white px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 font-medium text-xs sm:text-sm w-full sm:w-auto justify-center">
               <i class="fas fa-sync-alt"></i>
               Refresh
             </button>
@@ -476,104 +544,118 @@
     </div>
 
     <!-- Controls Section -->
-    <div class="glass-morphism rounded-2xl p-6 mb-8">
-      <div class="flex flex-col lg:flex-row gap-4 items-center">
-        <div class="search-container flex-1 min-w-0">
+    <div class="glass-morphism rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-4 sm:mb-8">
+      <div class="flex flex-col gap-4">
+        <div class="search-container w-full">
           <input
             id="search-input"
             type="text"
             placeholder="Search APIs..."
-            class="w-full glass-morphism rounded-xl py-3 text-gray-200 placeholder-gray-400 focus:outline-none"
+            class="w-full glass-morphism rounded-lg sm:rounded-xl py-2 sm:py-3 text-gray-200 placeholder-gray-400 focus:outline-none text-sm sm:text-base"
           />
           <i class="fas fa-search search-icon"></i>
         </div>
 
-        <div class="flex flex-wrap gap-2">
-          <button class="filter-button active glass-morphism px-4 py-2 rounded-lg text-sm font-medium" data-filter="all">
-            All <span id="count-all" class="ml-1">0</span>
-          </button>
-          <button class="filter-button glass-morphism px-4 py-2 rounded-lg text-sm font-medium" data-filter="up">
-            <i class="fas fa-check-circle text-green-500 mr-1"></i>UP <span id="count-up" class="ml-1">0</span>
-          </button>
-          <button class="filter-button glass-morphism px-4 py-2 rounded-lg text-sm font-medium" data-filter="down">
-            <i class="fas fa-times-circle text-red-500 mr-1"></i>DOWN <span id="count-down" class="ml-1">0</span>
-          </button>
-          <button class="filter-button glass-morphism px-4 py-2 rounded-lg text-sm font-medium" data-filter="critical">
-            <i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i>Critical <span id="count-critical" class="ml-1">0</span>
-          </button>
-        </div>
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center">
+          <div class="flex flex-wrap gap-2 flex-1">
+            <button class="filter-button active glass-morphism px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium flex-1 sm:flex-none" data-filter="all">
+              All <span id="count-all" class="ml-1">0</span>
+            </button>
+            <button class="filter-button glass-morphism px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium flex-1 sm:flex-none" data-filter="up">
+              <i class="fas fa-check-circle text-green-500 mr-1"></i><span class="hidden sm:inline">UP</span><span class="sm:hidden">✓</span> <span id="count-up" class="ml-1">0</span>
+            </button>
+            <button class="filter-button glass-morphism px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium flex-1 sm:flex-none" data-filter="down">
+              <i class="fas fa-times-circle text-red-500 mr-1"></i><span class="hidden sm:inline">DOWN</span><span class="sm:hidden">✗</span> <span id="count-down" class="ml-1">0</span>
+            </button>
+            <button class="filter-button glass-morphism px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium flex-1 sm:flex-none" data-filter="critical">
+              <i class="fas fa-exclamation-triangle text-yellow-500 mr-1"></i><span class="hidden sm:inline">Critical</span><span class="sm:hidden">!</span> <span id="count-critical" class="ml-1">0</span>
+            </button>
+          </div>
 
-        <select id="sort" class="glass-morphism rounded-lg px-4 py-2 text-gray-200 focus:outline-none">
-          <option value="name">Name (A-Z)</option>
-          <option value="latency-high">Latency (High to Low)</option>
-          <option value="latency-low">Latency (Low to High)</option>
-        </select>
+          <select id="sort" class="glass-morphism rounded-lg px-3 sm:px-4 py-2 text-gray-200 focus:outline-none text-xs sm:text-sm w-full sm:w-auto">
+            <option value="name">Name (A-Z)</option>
+            <option value="latency-high">Latency (High to Low)</option>
+            <option value="latency-low">Latency (Low to High)</option>
+          </select>
+        </div>
       </div>
     </div>
 
     <!-- API Cards Grid -->
-    <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+    <div id="dashboard" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-6 mb-4 sm:mb-8">
       <!-- Cards will be rendered here -->
     </div>
 
     <!-- Footer -->
-    <footer class="glass-morphism rounded-2xl p-6 text-center">
-      <p class="text-gray-400">
+    <footer class="glass-morphism rounded-xl sm:rounded-2xl p-4 sm:p-6 text-center">
+      <p class="text-gray-400 text-xs sm:text-sm">
         <i class="fas fa-heart text-red-500 mx-1"></i>
-        Made with love for monitoring APIs • Last scan: <span id="footer-time">--</span>
+        <span class="hidden sm:inline">Made with love for monitoring APIs • </span>
+        <span class="sm:hidden">API Monitor • </span>
+        Last scan: <span id="footer-time">--</span>
       </p>
     </footer>
   </main>
 
   <!-- Test from Location Modal -->
-  <div id="location-test-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
-    <div class="flex items-center justify-center min-h-screen p-4 overflow-y-auto">
-      <div class="glass-morphism rounded-2xl w-full max-w-7xl max-h-[95vh] flex flex-col my-4">
+  <div id="location-test-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden overflow-y-auto">
+    <div class="min-h-screen p-2 sm:p-4 flex items-start justify-center py-8">
+      <div class="glass-morphism rounded-xl sm:rounded-2xl w-full max-w-7xl flex flex-col shadow-2xl">
         <!-- Modal Header -->
-        <div class="flex items-center justify-between p-6 border-b border-gray-800">
-          <div>
-            <h2 class="text-2xl font-bold text-white mb-2">Test APIs from Your Location</h2>
-            <p class="text-gray-400 text-sm">Compare server monitoring results with direct tests from your browser</p>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-6 border-b border-gray-800 sticky top-0 bg-black/80 backdrop-blur-md z-20">
+          <div class="mb-4 sm:mb-0">
+            <h2 class="text-xl sm:text-2xl font-bold text-white mb-2">Test APIs from Your Location</h2>
+            <p class="text-gray-400 text-xs sm:text-sm">Compare server monitoring results with direct tests from your browser</p>
           </div>
-          <button id="close-modal" class="text-gray-400 hover:text-white transition-colors p-2">
-            <i class="fas fa-times text-2xl"></i>
+          <button id="close-modal" class="text-gray-400 hover:text-white transition-colors p-2 self-end sm:self-auto">
+            <i class="fas fa-times text-xl sm:text-2xl"></i>
           </button>
         </div>
 
         <!-- Modal Content -->
-        <div class="flex-1 overflow-auto flex flex-col p-6">
+        <div class="flex flex-col p-4 sm:p-6 max-h-[80vh] sm:max-h-[75vh]">
           <!-- Test Controls -->
-          <div class="flex items-center gap-4 mb-6">
-            <button id="start-location-test" class="bg-purple-500 hover:bg-purple-600 text-white px-8 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 font-medium">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <button id="start-location-test" class="bg-purple-500 hover:bg-purple-600 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 font-medium text-sm sm:text-base w-full sm:w-auto justify-center">
               <i class="fas fa-play"></i>
               Start Location Test
             </button>
-            <button id="stop-location-test" class="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 font-medium hidden">
+            <button id="stop-location-test" class="bg-red-500 hover:bg-red-600 text-white px-4 sm:px-8 py-2 sm:py-3 rounded-lg sm:rounded-xl transition-all duration-300 flex items-center gap-2 font-medium text-sm sm:text-base w-full sm:w-auto justify-center hidden">
               <i class="fas fa-stop"></i>
               Stop Test
             </button>
-            <div class="text-gray-400">
+            <div class="text-gray-400 text-sm">
               <span id="test-progress">Ready to test <span id="total-apis-count">0</span> APIs</span>
             </div>
           </div>
 
-          <!-- Results Table -->
-          <div class="flex-1 overflow-auto">
-            <div class="glass-morphism rounded-xl overflow-hidden">
-              <table class="w-full text-sm">
-                <thead class="bg-gray-900 sticky top-0 z-10">
-                  <tr>
-                    <th class="px-4 py-3 text-left font-semibold text-gray-200">API Name</th>
-                    <th class="px-4 py-3 text-left font-semibold text-gray-200">Server Result</th>
-                    <th class="px-4 py-3 text-left font-semibold text-gray-200">Your Location Result</th>
-                    <th class="px-4 py-3 text-left font-semibold text-gray-200">Test Method</th>
-                    <th class="px-4 py-3 text-left font-semibold text-gray-200">Latency Diff</th>
-                  </tr>
-                </thead>
-                <tbody id="location-test-results">
-                  <!-- Results will be populated here -->
-                </tbody>
-              </table>
+          <!-- Results Table Container -->
+          <div class="flex-1 overflow-auto min-h-0">
+            <div class="glass-morphism rounded-lg sm:rounded-xl overflow-hidden">
+              <!-- Mobile Card View -->
+              <div class="block sm:hidden" id="mobile-results">
+                <div id="mobile-test-results">
+                  <!-- Mobile cards will be populated here -->
+                </div>
+              </div>
+
+              <!-- Desktop Table View -->
+              <div class="hidden sm:block">
+                <table class="w-full text-sm">
+                  <thead class="bg-gray-900 sticky top-0 z-10">
+                    <tr>
+                      <th class="px-3 sm:px-4 py-3 text-left font-semibold text-gray-200">API Name</th>
+                      <th class="px-3 sm:px-4 py-3 text-left font-semibold text-gray-200">Server Result</th>
+                      <th class="px-3 sm:px-4 py-3 text-left font-semibold text-gray-200">Your Location Result</th>
+                      <th class="px-3 sm:px-4 py-3 text-left font-semibold text-gray-200 hidden lg:table-cell">Test Method</th>
+                      <th class="px-3 sm:px-4 py-3 text-left font-semibold text-gray-200 hidden xl:table-cell">Latency Diff</th>
+                    </tr>
+                  </thead>
+                  <tbody id="location-test-results">
+                    <!-- Results will be populated here -->
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -1145,17 +1227,22 @@
 
       initializeLocationTestTable() {
         const tbody = document.getElementById('location-test-results');
+        const mobileResults = document.getElementById('mobile-test-results');
         tbody.innerHTML = '';
+        mobileResults.innerHTML = '';
 
         this.apis.forEach(api => {
+          const safeId = api.name.replace(/[^a-zA-Z0-9]/g, '');
+
+          // Desktop table row
           const row = document.createElement('tr');
           row.className = 'border-b border-gray-800';
           row.innerHTML = `
-            <td class="px-4 py-3">
-              <div class="font-medium text-white">${api.name}</div>
-              <div class="text-xs text-gray-400 truncate">${api.url}</div>
+            <td class="px-3 sm:px-4 py-3">
+              <div class="font-medium text-white text-sm">${api.name}</div>
+              <div class="text-xs text-gray-400 truncate max-w-[200px]">${api.url}</div>
             </td>
-            <td class="px-4 py-3">
+            <td class="px-3 sm:px-4 py-3">
               <div class="flex items-center gap-2">
                 <span class="status-badge px-2 py-1 rounded-full text-xs font-bold ${api.status === 'UP' ? 'bg-green-500' : 'bg-red-500'} text-white">
                   ${api.status}
@@ -1163,17 +1250,63 @@
                 <span class="text-sm text-gray-300">${api.latency ? api.latency + 'ms' : '--'}</span>
               </div>
             </td>
-            <td class="px-4 py-3" id="user-result-${api.name.replace(/[^a-zA-Z0-9]/g, '')}">
+            <td class="px-3 sm:px-4 py-3" id="user-result-${safeId}">
               <span class="text-gray-400 text-sm">Not tested</span>
             </td>
-            <td class="px-4 py-3" id="test-method-${api.name.replace(/[^a-zA-Z0-9]/g, '')}">
+            <td class="px-3 sm:px-4 py-3 hidden lg:table-cell" id="test-method-${safeId}">
               <span class="text-gray-400 text-sm">--</span>
             </td>
-            <td class="px-4 py-3" id="latency-diff-${api.name.replace(/[^a-zA-Z0-9]/g, '')}">
+            <td class="px-3 sm:px-4 py-3 hidden xl:table-cell" id="latency-diff-${safeId}">
               <span class="text-gray-400 text-sm">--</span>
             </td>
           `;
           tbody.appendChild(row);
+
+          // Mobile card
+          const mobileCard = document.createElement('div');
+          mobileCard.className = 'mobile-card';
+          mobileCard.innerHTML = `
+            <div class="flex justify-between items-start mb-3">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-white text-sm mb-1">${api.name}</h3>
+                <p class="text-xs text-gray-400 truncate">${api.url}</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-xs">
+              <div>
+                <span class="text-gray-500">Server:</span>
+                <div class="flex items-center gap-1 mt-1">
+                  <span class="status-badge px-2 py-1 rounded-full text-xs font-bold ${api.status === 'UP' ? 'bg-green-500' : 'bg-red-500'} text-white">
+                    ${api.status}
+                  </span>
+                  <span class="text-gray-300">${api.latency ? api.latency + 'ms' : '--'}</span>
+                </div>
+              </div>
+
+              <div>
+                <span class="text-gray-500">Your Location:</span>
+                <div class="mt-1" id="mobile-user-result-${safeId}">
+                  <span class="text-gray-400">Not tested</span>
+                </div>
+              </div>
+
+              <div class="col-span-2">
+                <span class="text-gray-500">Method:</span>
+                <div class="mt-1" id="mobile-test-method-${safeId}">
+                  <span class="text-gray-400">--</span>
+                </div>
+              </div>
+
+              <div class="col-span-2" id="mobile-latency-diff-${safeId}">
+                <span class="text-gray-500">Latency Diff:</span>
+                <div class="mt-1">
+                  <span class="text-gray-400">--</span>
+                </div>
+              </div>
+            </div>
+          `;
+          mobileResults.appendChild(mobileCard);
         });
       }
 
@@ -1338,26 +1471,42 @@
       }
 
       updateLocationTestResult(safeId, api, result) {
+        // Update desktop table
         const userResultCell = document.getElementById(`user-result-${safeId}`);
         const testMethodCell = document.getElementById(`test-method-${safeId}`);
         const latencyDiffCell = document.getElementById(`latency-diff-${safeId}`);
 
-        // Update test result
-        if (result.success) {
-          userResultCell.innerHTML = `
-            <div class="flex items-center gap-2">
-              <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-green-500 text-white">UP</span>
-              <span class="text-sm text-gray-300">${result.latency}ms</span>
-            </div>
-          `;
-        } else {
-          userResultCell.innerHTML = `
-            <div class="flex items-center gap-2">
-              <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-red-500 text-white">DOWN</span>
-              <span class="text-sm text-gray-300">${result.latency}ms</span>
-            </div>
-          `;
-        }
+        // Update mobile cards
+        const mobileUserResult = document.getElementById(`mobile-user-result-${safeId}`);
+        const mobileTestMethod = document.getElementById(`mobile-test-method-${safeId}`);
+        const mobileLatencyDiff = document.getElementById(`mobile-latency-diff-${safeId}`);
+
+        const resultHtml = result.success ? `
+          <div class="flex items-center gap-2">
+            <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-green-500 text-white">UP</span>
+            <span class="text-sm text-gray-300">${result.latency}ms</span>
+          </div>
+        ` : `
+          <div class="flex items-center gap-2">
+            <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-red-500 text-white">DOWN</span>
+            <span class="text-sm text-gray-300">${result.latency}ms</span>
+          </div>
+        `;
+
+        const mobileResultHtml = result.success ? `
+          <div class="flex items-center gap-1">
+            <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-green-500 text-white">UP</span>
+            <span class="text-xs text-gray-300">${result.latency}ms</span>
+          </div>
+        ` : `
+          <div class="flex items-center gap-1">
+            <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-red-500 text-white">DOWN</span>
+            <span class="text-xs text-gray-300">${result.latency}ms</span>
+          </div>
+        `;
+
+        userResultCell.innerHTML = resultHtml;
+        mobileUserResult.innerHTML = mobileResultHtml;
 
         // Update test method
         let methodColor = 'text-blue-400';
@@ -1367,7 +1516,8 @@
           methodColor = 'text-red-400';
         }
 
-        testMethodCell.innerHTML = `<span class="${methodColor} text-sm">${result.method}</span>`;
+        if (testMethodCell) testMethodCell.innerHTML = `<span class="${methodColor} text-sm">${result.method}</span>`;
+        mobileTestMethod.innerHTML = `<span class="${methodColor} text-xs">${result.method}</span>`;
 
         // Calculate and display latency difference
         if (api.latency && result.latency) {
@@ -1375,9 +1525,11 @@
           const diffText = diff > 0 ? `+${diff}ms` : `${diff}ms`;
           const diffColor = Math.abs(diff) < 100 ? 'text-green-400' : (diff > 0 ? 'text-red-400' : 'text-blue-400');
 
-          latencyDiffCell.innerHTML = `<span class="${diffColor} text-sm font-mono">${diffText}</span>`;
+          if (latencyDiffCell) latencyDiffCell.innerHTML = `<span class="${diffColor} text-sm font-mono">${diffText}</span>`;
+          mobileLatencyDiff.querySelector('div').innerHTML = `<span class="${diffColor} text-xs font-mono">${diffText}</span>`;
         } else {
-          latencyDiffCell.innerHTML = '<span class="text-gray-400 text-sm">--</span>';
+          if (latencyDiffCell) latencyDiffCell.innerHTML = '<span class="text-gray-400 text-sm">--</span>';
+          mobileLatencyDiff.querySelector('div').innerHTML = '<span class="text-gray-400 text-xs">--</span>';
         }
       }
     }
