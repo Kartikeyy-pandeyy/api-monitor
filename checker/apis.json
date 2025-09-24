@@ -1,37 +1,27 @@
 [
   {
-    "name": "GitHub API",
-    "url": "https://api.github.com",
-    "critical": true
-  },
-  {
     "name": "Google Homepage",
     "url": "https://www.google.com",
     "critical": true
   },
   {
+    "name": "GitHub API",
+    "url": "https://api.github.com",
+    "critical": true
+  },
+  {
     "name": "Cloudflare DNS",
     "url": "https://1.1.1.1/cdn-cgi/trace",
-    "critical": false
+    "critical": true
   },
   {
-    "name": "Wikipedia API",
-    "url": "https://en.wikipedia.org/api/rest_v1/page/summary/India",
-    "critical": false
-  },
-  {
-    "name": "JSONPlaceholder",
+    "name": "JSONPlaceholder API",
     "url": "https://jsonplaceholder.typicode.com/posts/1",
     "critical": false
   },
   {
-    "name": "HTTPBin Status",
+    "name": "HTTPBin API",
     "url": "https://httpbin.org/status/200",
-    "critical": false
-  },
-  {
-    "name": "HTTP 500 Test",
-    "url": "https://httpstat.us/500",
     "critical": false
   },
   {
@@ -40,419 +30,33 @@
     "critical": true
   },
   {
-    "name": "PyPI Package Info",
-    "url": "https://pypi.org/pypi/django/json",
-    "critical": false
-  },
-  {
-    "name": "Maven Central",
-    "url": "https://repo1.maven.org/maven2/",
-    "critical": false
-  },
-  {
-    "name": "Ubuntu Package Repository",
-    "url": "https://archive.ubuntu.com/ubuntu/",
-    "critical": false
-  },
-  {
-    "name": "GitHub Status",
-    "url": "https://www.githubstatus.com/api/v2/status.json",
-    "critical": true
-  },
-  {
     "name": "Stack Overflow",
     "url": "https://stackoverflow.com",
     "critical": false
   },
   {
-    "name": "GeeksforGeeks",
-    "url": "https://www.geeksforgeeks.org",
-    "critical": false
-  },
-  {
-    "name": "MDN Web Docs",
-    "url": "https://developer.mozilla.org",
-    "critical": false
-  },
-  {
-    "name": "W3Schools",
-    "url": "https://www.w3schools.com",
-    "critical": false
-  },
-  {
-    "name": "Can I Use",
-    "url": "https://caniuse.com",
-    "critical": false
-  },
-  {
-    "name": "REST Countries API",
-    "url": "https://restcountries.com/v3.1/name/india",
-    "critical": false
-  },
-  {
-    "name": "IP Info Service",
-    "url": "https://ipinfo.io/json",
-    "critical": false
-  },
-  {
-    "name": "UUID Generator API",
-    "url": "https://httpbin.org/uuid",
-    "critical": false
-  },
-  {
-    "name": "India Post Pincode",
-    "url": "https://api.postalpincode.in/pincode/110001",
-    "critical": false
-  },
-  {
-    "name": "Indian Railways API",
-    "url": "https://indianrailapi.com/api/v2/TrainInformation/apikey/demo/TrainNumber/12002",
-    "critical": false
-  },
-  {
-    "name": "JSON Test API",
-    "url": "https://dummyjson.com/products/1",
-    "critical": false
-  },
-  {
-    "name": "ReqRes Test API",
-    "url": "https://reqres.in/api/users/2",
-    "critical": false
-  },
-  {
-    "name": "Cat Facts API",
-    "url": "https://catfact.ninja/fact",
-    "critical": false
-  },
-  {
-    "name": "Joke API",
-    "url": "https://official-joke-api.appspot.com/random_joke",
-    "critical": false
-  },
-  {
-    "name": "CoinGecko Ping",
-    "url": "https://api.coingecko.com/api/v3/ping",
-    "critical": false
-  },
-  {
-    "name": "Dog CEO API",
-    "url": "https://dog.ceo/api/breeds/image/random",
-    "critical": false
-  },
-  {
-    "name": "Random User API",
-    "url": "https://randomuser.me/api/",
-    "critical": false
-  },
-  {
-    "name": "Netlify Status",
-    "url": "https://www.netlifystatus.com/api/v2/status.json",
-    "critical": false
-  },
-  {
-    "name": "Vercel Status",
-    "url": "https://www.vercel-status.com/api/v2/status.json",
-    "critical": false
-  },
-  {
-    "name": "Cloudflare Status",
-    "url": "https://www.cloudflarestatus.com/api/v2/status.json",
-    "critical": true
-  },
-  {
-    "name": "Discord Status",
-    "url": "https://discordstatus.com/api/v2/status.json",
-    "critical": false
-  },
-  {
-    "name": "Slack Status",
-    "url": "https://status.slack.com/api/v2.0.0/current",
-    "critical": false
-  },
-  {
-    "name": "Amazon India",
-    "url": "https://www.amazon.in",
-    "critical": true
-  },
-  {
-    "name": "Paytm Homepage",
-    "url": "https://paytm.com",
-    "critical": false
-  },
-  {
-    "name": "PhonePe Homepage",
-    "url": "https://www.phonepe.com",
-    "critical": false
-  },
-  {
-    "name": "Ola Homepage",
-    "url": "https://www.olacabs.com",
-    "critical": false
-  },
-  {
-    "name": "YouTube Homepage",
+    "name": "YouTube",
     "url": "https://www.youtube.com",
     "critical": false
   },
   {
-    "name": "LinkedIn Homepage",
-    "url": "https://www.linkedin.com",
+    "name": "Wikipedia API",
+    "url": "https://en.wikipedia.org/api/rest_v1/page/summary/Wikipedia",
     "critical": false
   },
   {
-    "name": "Twitter Homepage",
-    "url": "https://twitter.com",
-    "critical": false
-  },
-  {
-    "name": "Instagram Homepage",
-    "url": "https://www.instagram.com",
-    "critical": false
-  },
-  {
-    "name": "Facebook Homepage",
-    "url": "https://www.facebook.com",
-    "critical": false
-  },
-  {
-    "name": "WhatsApp Web",
-    "url": "https://web.whatsapp.com",
-    "critical": false
-  },
-  {
-    "name": "Telegram Web",
-    "url": "https://web.telegram.org",
-    "critical": false
-  },
-  {
-    "name": "Coursera Homepage",
-    "url": "https://www.coursera.org",
-    "critical": false
-  },
-  
-  {
-    "name": "edX Homepage",
-    "url": "https://www.edx.org",
-    "critical": false
-  },
-  {
-    "name": "Khan Academy",
-    "url": "https://www.khanacademy.org",
-    "critical": false
-  },
-  {
-    "name": "Codecademy",
-    "url": "https://www.codecademy.com",
-    "critical": false
-  },
-  {
-    "name": "FreeCodeCamp",
-    "url": "https://www.freecodecamp.org",
-    "critical": false
-  },
-  {
-    "name": "GitLab Homepage",
-    "url": "https://gitlab.com",
+    "name": "Docker Hub",
+    "url": "https://hub.docker.com",
     "critical": true
   },
   {
-    "name": "Bitbucket Homepage",
-    "url": "https://bitbucket.org",
-    "critical": false
-  },
-  {
-    "name": "SourceForge",
-    "url": "https://sourceforge.net",
-    "critical": false
-  },
-  {
-    "name": "Redis Homepage",
-    "url": "https://redis.io",
-    "critical": false
-  },
-  {
-    "name": "MongoDB Homepage",
-    "url": "https://www.mongodb.com",
-    "critical": false
-  },
-  {
-    "name": "PostgreSQL Homepage",
-    "url": "https://www.postgresql.org",
-    "critical": false
-  },
-  {
-    "name": "MySQL Homepage",
-    "url": "https://www.mysql.com",
-    "critical": false
-  },
-  {
-    "name": "Apache Homepage",
-    "url": "https://httpd.apache.org",
-    "critical": false
-  },
-  {
-    "name": "Nginx Homepage",
-    "url": "https://nginx.org",
-    "critical": false
-  },
-  {
-    "name": "Docker Homepage",
-    "url": "https://www.docker.com",
-    "critical": true
-  },
-  {
-    "name": "Kubernetes Homepage",
-    "url": "https://kubernetes.io",
-    "critical": true
-  },
-  {
-    "name": "Jenkins Homepage",
-    "url": "https://www.jenkins.io",
-    "critical": true
-  },
-  {
-    "name": "Ansible Homepage",
-    "url": "https://www.ansible.com",
-    "critical": false
-  },
-  {
-    "name": "Prometheus Homepage",
-    "url": "https://prometheus.io",
-    "critical": false
-  },
-  {
-    "name": "Grafana Homepage",
-    "url": "https://grafana.com",
-    "critical": false
-  },
-  {
-    "name": "Elastic Homepage",
-    "url": "https://www.elastic.co",
-    "critical": false
-  },
-  {
-    "name": "Node.js Homepage",
+    "name": "Node.js Official",
     "url": "https://nodejs.org",
     "critical": true
   },
   {
-    "name": "Python Homepage",
+    "name": "Python Official",
     "url": "https://www.python.org",
     "critical": true
-  },
-  {
-    "name": "Java Oracle",
-    "url": "https://www.oracle.com/java/",
-    "critical": false
-  },
-  {
-    "name": "Go Language",
-    "url": "https://golang.org",
-    "critical": false
-  },
-  {
-    "name": "Rust Language",
-    "url": "https://www.rust-lang.org",
-    "critical": false
-  },
-  {
-    "name": "React Homepage",
-    "url": "https://reactjs.org",
-    "critical": false
-  },
-  {
-    "name": "Vue.js Homepage",
-    "url": "https://vuejs.org",
-    "critical": false
-  },
-  {
-    "name": "Angular Homepage",
-    "url": "https://angular.io",
-    "critical": false
-  },
-  {
-    "name": "Bootstrap Homepage",
-    "url": "https://getbootstrap.com",
-    "critical": false
-  },
-  {
-    "name": "Tailwind CSS",
-    "url": "https://tailwindcss.com",
-    "critical": false
-  },
-  {
-    "name": "VS Code Homepage",
-    "url": "https://code.visualstudio.com",
-    "critical": false
-  },
-  {
-    "name": "Postman Homepage",
-    "url": "https://www.postman.com",
-    "critical": false
-  },
-  {
-    "name": "Insomnia Homepage",
-    "url": "https://insomnia.rest",
-    "critical": false
-  },
-  {
-    "name": "JetBrains Homepage",
-    "url": "https://www.jetbrains.com",
-    "critical": false
-  },
-  {
-    "name": "Atlassian Homepage",
-    "url": "https://www.atlassian.com",
-    "critical": false
-  },
-  {
-    "name": "Slack Homepage",
-    "url": "https://slack.com",
-    "critical": false
-  },
-  {
-    "name": "Discord Homepage",
-    "url": "https://discord.com",
-    "critical": false
-  },
-  {
-    "name": "Zoom Homepage",
-    "url": "https://zoom.us",
-    "critical": false
-  },
-  {
-    "name": "Microsoft Teams",
-    "url": "https://www.microsoft.com/en-us/microsoft-teams/group-chat-software",
-    "critical": false
-  },
-  {
-    "name": "Google Meet",
-    "url": "https://meet.google.com",
-    "critical": false
-  },
-  {
-    "name": "Notion Homepage",
-    "url": "https://www.notion.so",
-    "critical": false
-  },
-  {
-    "name": "Trello Homepage",
-    "url": "https://trello.com",
-    "critical": false
-  },
-  {
-    "name": "Asana Homepage",
-    "url": "https://asana.com",
-    "critical": false
-  },
-  {
-    "name": "Jira Homepage",
-    "url": "https://www.atlassian.com/software/jira",
-    "critical": false
-  },
-  {
-    "name": "Confluence Homepage",
-    "url": "https://www.atlassian.com/software/confluence",
-    "critical": false
   }
 ]

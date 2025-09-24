@@ -325,7 +325,20 @@
     }
 
     .glow-text {
-      text-shadow: 0 0 20px rgba(59, 130, 246, 0.5), 0 0 40px rgba(139, 92, 246, 0.3);
+      text-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 40px rgba(139, 92, 246, 0.6), 0 0 60px rgba(236, 72, 153, 0.4);
+      background-size: 200% auto;
+      animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleGlow {
+      0% {
+        background-position: 0% center;
+        text-shadow: 0 0 20px rgba(59, 130, 246, 0.8), 0 0 40px rgba(139, 92, 246, 0.6), 0 0 60px rgba(236, 72, 153, 0.4);
+      }
+      100% {
+        background-position: 200% center;
+        text-shadow: 0 0 25px rgba(139, 92, 246, 1), 0 0 50px rgba(236, 72, 153, 0.8), 0 0 75px rgba(59, 130, 246, 0.6);
+      }
     }
 
     .status-badge {
@@ -391,7 +404,7 @@
       <div class="relative z-10">
         <div class="flex flex-col lg:flex-row justify-between items-center">
           <div class="text-center lg:text-left mb-6 lg:mb-0">
-            <h1 class="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent mb-2">
+            <h1 class="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-2 glow-text">
               🔍 API Health Monitor
             </h1>
             <p class="text-gray-100 text-lg">Real-time monitoring dashboard for all your services</p>
@@ -404,6 +417,11 @@
                 <span class="loading-dots">Loading</span>
               </p>
             </div>
+
+            <button id="test-from-location-btn" class="glass-morphism hover:bg-purple-500 text-purple-400 hover:text-white px-6 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 font-medium">
+              <i class="fas fa-map-marker-alt"></i>
+              Test from My Location
+            </button>
 
             <button id="refresh-btn" class="glass-morphism hover:bg-blue-500 text-blue-400 hover:text-white px-6 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 font-medium">
               <i class="fas fa-sync-alt"></i>
@@ -506,6 +524,62 @@
       </p>
     </footer>
   </main>
+
+  <!-- Test from Location Modal -->
+  <div id="location-test-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4 overflow-y-auto">
+      <div class="glass-morphism rounded-2xl w-full max-w-7xl max-h-[95vh] flex flex-col my-4">
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between p-6 border-b border-gray-800">
+          <div>
+            <h2 class="text-2xl font-bold text-white mb-2">Test APIs from Your Location</h2>
+            <p class="text-gray-400 text-sm">Compare server monitoring results with direct tests from your browser</p>
+          </div>
+          <button id="close-modal" class="text-gray-400 hover:text-white transition-colors p-2">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="flex-1 overflow-auto flex flex-col p-6">
+          <!-- Test Controls -->
+          <div class="flex items-center gap-4 mb-6">
+            <button id="start-location-test" class="bg-purple-500 hover:bg-purple-600 text-white px-8 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 font-medium">
+              <i class="fas fa-play"></i>
+              Start Location Test
+            </button>
+            <button id="stop-location-test" class="bg-red-500 hover:bg-red-600 text-white px-8 py-3 rounded-xl transition-all duration-300 flex items-center gap-2 font-medium hidden">
+              <i class="fas fa-stop"></i>
+              Stop Test
+            </button>
+            <div class="text-gray-400">
+              <span id="test-progress">Ready to test <span id="total-apis-count">0</span> APIs</span>
+            </div>
+          </div>
+
+          <!-- Results Table -->
+          <div class="flex-1 overflow-auto">
+            <div class="glass-morphism rounded-xl overflow-hidden">
+              <table class="w-full text-sm">
+                <thead class="bg-gray-900 sticky top-0 z-10">
+                  <tr>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-200">API Name</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-200">Server Result</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-200">Your Location Result</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-200">Test Method</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-200">Latency Diff</th>
+                  </tr>
+                </thead>
+                <tbody id="location-test-results">
+                  <!-- Results will be populated here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Templates -->
   <template id="api-card-template">
@@ -670,6 +744,19 @@
 
         // Scroll indicator
         window.addEventListener('scroll', this.updateScrollIndicator);
+
+        // Test from location modal
+        document.getElementById('test-from-location-btn').addEventListener('click', () => this.openLocationTestModal());
+        document.getElementById('close-modal').addEventListener('click', () => this.closeLocationTestModal());
+        document.getElementById('start-location-test').addEventListener('click', () => this.startLocationTest());
+        document.getElementById('stop-location-test').addEventListener('click', () => this.stopLocationTest());
+
+        // Close modal on backdrop click
+        document.getElementById('location-test-modal').addEventListener('click', (e) => {
+          if (e.target.id === 'location-test-modal') {
+            this.closeLocationTestModal();
+          }
+        });
       }
 
       startAutoRefresh() {
@@ -1027,6 +1114,271 @@
 
           historyContainer.appendChild(historyItem);
         });
+      }
+
+      // Location Testing Methods
+      openLocationTestModal() {
+        const modal = document.getElementById('location-test-modal');
+        modal.classList.remove('hidden');
+
+        // Store original body overflow and prevent background scrolling
+        this.originalBodyOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        // Update API count
+        document.getElementById('total-apis-count').textContent = this.apis.length;
+
+        // Initialize results table
+        this.initializeLocationTestTable();
+      }
+
+      closeLocationTestModal() {
+        const modal = document.getElementById('location-test-modal');
+        modal.classList.add('hidden');
+
+        // Restore original body overflow
+        document.body.style.overflow = this.originalBodyOverflow || 'auto';
+
+        // Stop any running tests
+        this.stopLocationTest();
+      }
+
+      initializeLocationTestTable() {
+        const tbody = document.getElementById('location-test-results');
+        tbody.innerHTML = '';
+
+        this.apis.forEach(api => {
+          const row = document.createElement('tr');
+          row.className = 'border-b border-gray-800';
+          row.innerHTML = `
+            <td class="px-4 py-3">
+              <div class="font-medium text-white">${api.name}</div>
+              <div class="text-xs text-gray-400 truncate">${api.url}</div>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span class="status-badge px-2 py-1 rounded-full text-xs font-bold ${api.status === 'UP' ? 'bg-green-500' : 'bg-red-500'} text-white">
+                  ${api.status}
+                </span>
+                <span class="text-sm text-gray-300">${api.latency ? api.latency + 'ms' : '--'}</span>
+              </div>
+            </td>
+            <td class="px-4 py-3" id="user-result-${api.name.replace(/[^a-zA-Z0-9]/g, '')}">
+              <span class="text-gray-400 text-sm">Not tested</span>
+            </td>
+            <td class="px-4 py-3" id="test-method-${api.name.replace(/[^a-zA-Z0-9]/g, '')}">
+              <span class="text-gray-400 text-sm">--</span>
+            </td>
+            <td class="px-4 py-3" id="latency-diff-${api.name.replace(/[^a-zA-Z0-9]/g, '')}">
+              <span class="text-gray-400 text-sm">--</span>
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      }
+
+      async startLocationTest() {
+        this.isLocationTesting = true;
+        const startBtn = document.getElementById('start-location-test');
+        const stopBtn = document.getElementById('stop-location-test');
+        const progressSpan = document.getElementById('test-progress');
+
+        startBtn.classList.add('hidden');
+        stopBtn.classList.remove('hidden');
+
+        // Lambda proxy URL
+        this.lambdaProxyUrl = 'https://xmh6bgaebsc32tswfykmupfpym0lszib.lambda-url.us-east-1.on.aws/';
+
+        let completed = 0;
+
+        for (const api of this.apis) {
+          if (!this.isLocationTesting) break;
+
+          completed++;
+          progressSpan.textContent = `Testing ${completed} of ${this.apis.length} APIs...`;
+
+          const safeId = api.name.replace(/[^a-zA-Z0-9]/g, '');
+          const userResultCell = document.getElementById(`user-result-${safeId}`);
+          const testMethodCell = document.getElementById(`test-method-${safeId}`);
+          const latencyDiffCell = document.getElementById(`latency-diff-${safeId}`);
+
+          // Show testing indicator
+          userResultCell.innerHTML = '<span class="text-blue-400 text-sm"><i class="fas fa-spinner fa-spin mr-1"></i>Testing...</span>';
+
+          try {
+            const result = await this.testApiFromLocation(api);
+            this.updateLocationTestResult(safeId, api, result);
+          } catch (error) {
+            console.error(`Error testing ${api.name}:`, error);
+            userResultCell.innerHTML = '<span class="text-red-400 text-sm">Test failed</span>';
+            testMethodCell.innerHTML = '<span class="text-gray-400 text-sm">Error</span>';
+          }
+
+          // Small delay between tests to avoid overwhelming
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+
+        if (this.isLocationTesting) {
+          progressSpan.textContent = `Completed testing ${this.apis.length} APIs`;
+        }
+
+        this.stopLocationTest();
+      }
+
+      stopLocationTest() {
+        this.isLocationTesting = false;
+        const startBtn = document.getElementById('start-location-test');
+        const stopBtn = document.getElementById('stop-location-test');
+
+        startBtn.classList.remove('hidden');
+        stopBtn.classList.add('hidden');
+      }
+
+      async testApiFromLocation(api) {
+        const startTime = performance.now();
+
+        try {
+          // First attempt: Direct browser request
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+          const response = await fetch(api.url, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-store',
+            signal: controller.signal,
+            headers: {
+              'Accept': 'application/json, text/plain, */*'
+            }
+          });
+
+          clearTimeout(timeoutId);
+          const endTime = performance.now();
+          const latency = Math.round(endTime - startTime);
+
+          return {
+            success: true,
+            status: response.status,
+            latency,
+            method: 'Direct from your browser',
+            error: null
+          };
+
+        } catch (error) {
+          // If direct request fails (likely CORS), try Lambda proxy
+          if (error.name === 'TypeError' || error.message.includes('CORS') || error.message.includes('fetch')) {
+            return await this.testApiViaProxy(api, startTime);
+          }
+
+          const endTime = performance.now();
+          const latency = Math.round(endTime - startTime);
+
+          return {
+            success: false,
+            status: null,
+            latency,
+            method: 'Direct from your browser',
+            error: error.message
+          };
+        }
+      }
+
+      async testApiViaProxy(api, originalStartTime) {
+        try {
+          const proxyStartTime = performance.now();
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+          const response = await fetch(this.lambdaProxyUrl, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-store',
+            signal: controller.signal,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+              url: api.url,
+              method: 'GET',
+              timeout: 10
+            })
+          });
+
+          clearTimeout(timeoutId);
+          const endTime = performance.now();
+          const totalLatency = Math.round(endTime - originalStartTime);
+
+          if (!response.ok) {
+            throw new Error(`Proxy error: ${response.status}`);
+          }
+
+          const result = await response.json();
+
+          return {
+            success: result.success,
+            status: result.status_code,
+            latency: result.latency_ms, // Use the Lambda's measured latency
+            method: 'Via CORS proxy (Lambda)',
+            error: result.error
+          };
+
+        } catch (error) {
+          const endTime = performance.now();
+          const latency = Math.round(endTime - originalStartTime);
+
+          return {
+            success: false,
+            status: null,
+            latency,
+            method: 'CORS blocked entirely',
+            error: error.message
+          };
+        }
+      }
+
+      updateLocationTestResult(safeId, api, result) {
+        const userResultCell = document.getElementById(`user-result-${safeId}`);
+        const testMethodCell = document.getElementById(`test-method-${safeId}`);
+        const latencyDiffCell = document.getElementById(`latency-diff-${safeId}`);
+
+        // Update test result
+        if (result.success) {
+          userResultCell.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-green-500 text-white">UP</span>
+              <span class="text-sm text-gray-300">${result.latency}ms</span>
+            </div>
+          `;
+        } else {
+          userResultCell.innerHTML = `
+            <div class="flex items-center gap-2">
+              <span class="status-badge px-2 py-1 rounded-full text-xs font-bold bg-red-500 text-white">DOWN</span>
+              <span class="text-sm text-gray-300">${result.latency}ms</span>
+            </div>
+          `;
+        }
+
+        // Update test method
+        let methodColor = 'text-blue-400';
+        if (result.method === 'Via CORS proxy (Lambda)') {
+          methodColor = 'text-yellow-400';
+        } else if (result.method === 'CORS blocked entirely') {
+          methodColor = 'text-red-400';
+        }
+
+        testMethodCell.innerHTML = `<span class="${methodColor} text-sm">${result.method}</span>`;
+
+        // Calculate and display latency difference
+        if (api.latency && result.latency) {
+          const diff = result.latency - api.latency;
+          const diffText = diff > 0 ? `+${diff}ms` : `${diff}ms`;
+          const diffColor = Math.abs(diff) < 100 ? 'text-green-400' : (diff > 0 ? 'text-red-400' : 'text-blue-400');
+
+          latencyDiffCell.innerHTML = `<span class="${diffColor} text-sm font-mono">${diffText}</span>`;
+        } else {
+          latencyDiffCell.innerHTML = '<span class="text-gray-400 text-sm">--</span>';
+        }
       }
     }
 
